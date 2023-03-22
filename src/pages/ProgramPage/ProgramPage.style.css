@@ -1,0 +1,68 @@
+.installation-container{
+    background-color: #e5eeee;
+    background-image: url("../../assets/background-light.png");
+    background-repeat: no-repeat;
+    background-size:cover;
+    min-width: 320px;
+}
+.app-title{
+    font-size: 50px;
+    line-height: 60px;
+}
+.slider-container{
+    display: flex;
+    justify-content: center;
+    background-color: #f1f1f1;
+    width: 100%;
+    min-width: 320px;
+}
+description-container{
+    display: flex;
+    justify-content: space-between;
+}
+full-description{}
+.details{}
+.title{}
+.license-box{}
+.update-box{
+    display: flex;
+    flex-direction: column;
+}
+.link-box{}
+.title-block{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.icon{
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+.extension{
+    color: #d9d9d9;
+}
+.indention{
+    margin-left: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+.social-network{
+    color: #313131;
+}
+.social-network:hover{
+    color: #464646;
+}
+.install{
+    margin-left: 25px;
+    height: 38px;
+}
+@media (max-width: 526px) {
+    .install{
+        margin-left: 0;
+    }
+    .dropdown{
+        margin-right: 20px;
+    }
+}

@@ -1,0 +1,17 @@
+.list-group{
+    border-radius: 0;
+}
+.list-group-item{
+    cursor: pointer;
+    border-width: 0;
+    background-color: #fff;
+}
+.list-group-item:hover,
+.list-group-item:focus{
+    border-left: 3px solid #262626;
+    background-color: #f1f1f1;
+}
+
+.list-group-item:active{
+    background-color: #d9d9d9;
+}
