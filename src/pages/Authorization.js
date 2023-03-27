@@ -1,12 +1,13 @@
-import React, {useState} from 'react';
+import React, { useState} from 'react';
 import {Button, Card, Container, Form, Row} from "react-bootstrap";
 import {NavLink, useLocation} from "react-router-dom";
-import {LOGIN_ROUTE, REGISTRATION_ROUTE} from "../utils/consts";
-import '../styles/App.css';
+import {LOGIN_ROUTE, REGISTRATION_ROUTE} from "../routes/consts";
+import '../assets/App.css';
 import {login, registration} from "../http/userAPI";
+import {observer} from "mobx-react-lite";
 
-const Authorization = () => {
-    const location = useLocation()
+const Authorization = observer(() => {
+    const location = useLocation();
     const isLogin = location.pathname === LOGIN_ROUTE
     const [username,setUsername] = useState('');
     const [password,setPassword] = useState('');
@@ -14,9 +15,9 @@ const Authorization = () => {
 
     const click = async () => {
         if(isLogin){
-            const response = await login();
-        }
-        else {
+            const response = await login(username,password);
+            console.log(response)
+        } else {
             const response = await registration(username,password);
             console.log(response)
         }
@@ -42,10 +43,6 @@ const Authorization = () => {
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                     />
-                    <Form.Check className="mt-3" type="checkbox">
-                        <Form.Check.Input isValid />
-                        <Form.Check.Label style={{color: "black"}}>Запомнить пароль</Form.Check.Label>
-                    </Form.Check>
                     <Row>
                         <div className="d-flex justify-content-between align-items-center">
                             {isLogin ?
@@ -66,5 +63,5 @@ const Authorization = () => {
             </Card>
         </Container>
     );
-};
+});
 export default Authorization;

@@ -1,7 +1,7 @@
 import React from 'react';
 import {observer} from "mobx-react-lite";
 import {NavLink, useNavigate} from "react-router-dom";
-import {PROGRAM_ROUTE} from "../utils/consts";
+import {PROGRAM_ROUTE} from "../routes/consts";
 import {Col} from "react-bootstrap";
 
 const ProgramCard = observer( (props)  => {

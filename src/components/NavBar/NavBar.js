@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './NavBar.style.css';
 import {NavLink} from "react-router-dom";
-import {ABOUT_ROUTE, ACCOUNT_DETAILS_ROUTE, CATALOG_ROUTE, DEVELOPER_ROUTE, LOGIN_ROUTE} from "../../utils/consts";
+import {ABOUT_ROUTE, ACCOUNT_DETAILS_ROUTE, CATALOG_ROUTE, DEVELOPER_ROUTE, LOGIN_ROUTE} from "../../routes/consts";
 import Logo from "../../assets/logo.svg";
 const NavBar = () => {
     const [isActive, setIsActive] = useState(false);

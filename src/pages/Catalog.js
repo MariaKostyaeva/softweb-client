@@ -11,7 +11,6 @@ const Catalog = () => {
     const [categories,setCategory] = useState([]);
     const [applications,setApplications] = useState([]);
     const [isAppLoading,setIsAppLoading] = useState(false);
-    let id = 1;
 
     async function fetchCategory(){
         try{
@@ -28,8 +27,10 @@ const Catalog = () => {
     async function fetchAppByCategory(){
         try{
             setIsAppLoading(true);
-            const response = await $host.get(`store/v1/application/category?page=0&size=9&sort=id,asc&categoryId=${id}`);
-            setApplications(response.data);
+            for(let i = 1; i < 7; i++){
+                const response = await $host.get(`store/v1/application/category?page=0&size=6&sort=id,asc&categoryId=${i}`);
+                setApplications(applications.concat(response.data));
+            }
             setIsAppLoading(false);
         }
         catch (e){
@@ -37,9 +38,10 @@ const Catalog = () => {
         }
     }
 
+    console.log(applications)
     useEffect(() => {
-        fetchCategory();
         fetchAppByCategory();
+        fetchCategory();
     }, [])
     return (
         <Container className="d-flex justify-content-center align-items-center w-75 mt-4 mb-4">
@@ -50,10 +52,12 @@ const Catalog = () => {
                         <div key={category.id}>
                             <CategoryBar category={category} key={category.id}/>
                             <Row className="mt-4 ms-2 me-2">
-                                {applications.map((app) =>
-                                    app.category.id === category.id &&
-                                    <ProgramCard app={app} key={app.id}/>
-                                )}
+                                {
+                                    applications.map((app) =>
+                                        app.category.id === category.id &&
+                                        <ProgramCard app={app} key={app.id}/>
+                                    )
+                                }
                             </Row>
                         </div>
                     )

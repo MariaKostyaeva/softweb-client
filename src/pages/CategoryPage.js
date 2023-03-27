@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Breadcrumb, Button, Col, Container, Row} from "react-bootstrap";
-import {CATALOG_ROUTE} from "../utils/consts";
+import {CATALOG_ROUTE} from "../routes/consts";
 import Loader from "../components/Loader/Loader";
 import axios from "axios";
 import {useParams} from "react-router-dom";

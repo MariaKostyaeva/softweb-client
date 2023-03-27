@@ -5,17 +5,17 @@ import {
     DEVELOPER_ROUTE,
     LOGIN_ROUTE, PROGRAM_ROUTE,
     REGISTRATION_ROUTE
-} from "./utils/consts";
-import Catalog from "./pages/Catalog";
-import Authorization from "./pages/Authorization";
-import About from "./pages/About";
-import ProgramPage from "./pages/ProgramPage/ProgramPage";
-import DeveloperPage from "./pages/DeveloperPage";
-import AllProgramPage from "./pages/AllProgramPage";
-import CreateProgramPage from "./pages/CreateProgramPage";
-import AdminPage from "./pages/AdminPage";
-import AccountDetails from "./pages/AccountDetails";
-import CategoryPage from "./pages/CategoryPage";
+} from "./consts";
+import Catalog from "../pages/Catalog";
+import Authorization from "../pages/Authorization";
+import About from "../pages/About";
+import ProgramPage from "../pages/ProgramPage/ProgramPage";
+import DeveloperPage from "../pages/DeveloperPage";
+import AllProgramPage from "../pages/AllProgramPage";
+import CreateProgramPage from "../pages/CreateProgramPage";
+import AdminPage from "../pages/AdminPage";
+import AccountDetails from "../pages/AccountDetails";
+import CategoryPage from "../pages/CategoryPage";
 
 export const devRoutes = [
     {
