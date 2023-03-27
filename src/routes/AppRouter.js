@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {Routes,Route,Navigate} from "react-router-dom";
-import {adminRoutes, devRoutes, publicRoutes} from "../routes";
+import {adminRoutes, devRoutes, publicRoutes} from "../routes/routes";
 import {Context} from "../index";
 
 const AppRouter = () => {
