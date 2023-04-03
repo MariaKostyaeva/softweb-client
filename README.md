@@ -1,17 +1,40 @@
-# Getting Started with Create React App
+<h1 align="center">
+  <br>
+  <img src="https://i.ibb.co/3S7K4tL/logo.png" alt="SoftWeb" width="200">
+  <br>
+  SoftWeb WebClient
+  <br>
+</h1>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description
+Web client of the online application store <i>SoftWeb</i>
 
-## Available Scripts
+### Project Structure (src)
++ assets - folder for css, js, images and other files.
++ components - folder for various components.
++ http folder for axios settings and writing services for the API.
++ pages - folder for the base pages for the project.
++ routes - folder for defining routes. Specifies which path the page belongs to.
++ store - a folder for the global data warehouse (methods for writing and taking data that came via the API).
 
-In the project directory, you can run:
+### Technologies used
+![React](https://img.shields.io/badge/-React-black?style=flat-square&logo=react)
 
-### `npm start`
+### Launch project:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Launch a project in the IDE (WebStorm)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+2. Install all dependencies (the IDE itself will suggest).
+```
+npm install
+```
 
+3. Copy .env
+```
+copy example.env .env
+```
 
+4. Launch project
+```
+npm start
+```
