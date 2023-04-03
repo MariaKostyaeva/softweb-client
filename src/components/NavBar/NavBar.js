@@ -1,12 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import './NavBar.style.css';
-import {NavLink} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import {ABOUT_ROUTE, ACCOUNT_DETAILS_ROUTE, CATALOG_ROUTE, DEVELOPER_ROUTE, LOGIN_ROUTE} from "../../routes/consts";
 import Logo from "../../assets/logo.svg";
-const NavBar = () => {
+import {observer} from "mobx-react-lite";
+import {Context} from "../../index";
+const NavBar = observer(() => {
+    const {user} = useContext(Context);
+    const navigate = useNavigate();
     const [isActive, setIsActive] = useState(false);
-
     const [isOpen, setIsOpen] = useState(false);
+    const [username,setUsername] = useState();
+
 
     const isMobile = {
         Android: function () {
@@ -34,6 +39,7 @@ const NavBar = () => {
             );
         }
     };
+
     if(isMobile.any()){
         document.body.classList.add('_touch');
         let menuArrows = document.querySelectorAll('.menu_arrow');
@@ -49,14 +55,29 @@ const NavBar = () => {
         document.body.classList.add('_pc');
     }
 
-    useEffect(() => {
-        document.body.classList.toggle('_lock', isOpen);
-    },[isOpen])
-
     const handleClick = event => {
         setIsActive(current => !current);
         setIsOpen(!isOpen);
     }
+
+    const getUserName = () => {
+        if(localStorage.length !== 0){
+            const username = JSON.parse(localStorage.getItem('user'));
+            setUsername(username['fullName']);
+        }
+    }
+
+    const logout = () => {
+        user.setUser({});
+        user.setIsAuth(false);
+        localStorage.clear();
+        navigate(CATALOG_ROUTE);
+    }
+
+    useEffect(() => {
+        getUserName()
+        document.body.classList.toggle('_lock', isOpen);
+    },[isOpen])
 
     return (
         <header className="header">
@@ -74,13 +95,18 @@ const NavBar = () => {
                             <li><NavLink to={CATALOG_ROUTE} className="menu_link">Магазин</NavLink></li>
                             <li><NavLink to={ABOUT_ROUTE} className="menu_link">О сайте</NavLink></li>
                             <li>
-                                <NavLink to={LOGIN_ROUTE} className="menu_link"><i className="fa-regular fa-user me-2"></i>Аккаунт разработчика</NavLink>
+                                {user.isAuth === true
+                                    ? <div className="menu_link">{username}</div>
+                                    : <NavLink to={LOGIN_ROUTE} className="menu_link"><i className="fa-regular fa-user me-2"></i>Аккаунт разработчика</NavLink>
+                                }
                                 <span className={isActive ? 'menu_arrow _active' : 'menu_arrow'}></span>
-                                <ul className="menu_sub-list">
-                                    <li><NavLink to={DEVELOPER_ROUTE} className="menu_sub-link">Управление приложениями</NavLink></li>
-                                    <li><NavLink to={ACCOUNT_DETAILS_ROUTE} className="menu_sub-link">Данные учетной записи</NavLink></li>
-                                    <li><NavLink className="menu_sub-link">Выход</NavLink></li>
-                                </ul>
+                                {user.isAuth === true &&
+                                    <ul className="menu_sub-list">
+                                        <li><NavLink to={DEVELOPER_ROUTE} className="menu_sub-link">Управление приложениями</NavLink></li>
+                                        <li><NavLink to={ACCOUNT_DETAILS_ROUTE} className="menu_sub-link">Данные учетной записи</NavLink></li>
+                                        <li><a className="menu_sub-link" onClick={() => logout()}>Выход</a></li>
+                                    </ul>
+                                }
                             </li>
                         </ul>
                     </nav>
@@ -88,5 +114,5 @@ const NavBar = () => {
             </div>
         </header>
     );
-};
+});
 export default NavBar;

@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {Col, Container, Row} from "react-bootstrap";
 import CategoryBar from "../components/CategoryBar/CategoryBar";
 import ProgramCard from "../components/ProgramCard";
-import axios from "axios";
 import Loader from "../components/Loader/Loader";
 import {$host} from "../http";
 
@@ -38,7 +37,6 @@ const Catalog = () => {
         }
     }
 
-    console.log(applications)
     useEffect(() => {
         fetchAppByCategory();
         fetchCategory();

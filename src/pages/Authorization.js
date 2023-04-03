@@ -1,26 +1,37 @@
-import React, { useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Button, Card, Container, Form, Row} from "react-bootstrap";
-import {NavLink, useLocation} from "react-router-dom";
-import {LOGIN_ROUTE, REGISTRATION_ROUTE} from "../routes/consts";
+import {NavLink, useLocation, useNavigate} from "react-router-dom";
+import {CATALOG_ROUTE, DEVELOPER_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE} from "../routes/consts";
 import '../assets/App.css';
 import {login, registration} from "../http/userAPI";
 import {observer} from "mobx-react-lite";
+import {Context} from "../index";
 
 const Authorization = observer(() => {
+    const {user} = useContext(Context);
     const location = useLocation();
+    const navigate = useNavigate();
     const isLogin = location.pathname === LOGIN_ROUTE
     const [username,setUsername] = useState('');
     const [password,setPassword] = useState('');
 
 
-    const click = async () => {
-        if(isLogin){
-            const response = await login(username,password);
-            console.log(response)
-        } else {
-            const response = await registration(username,password);
-            console.log(response)
+    const click = async (e) => {
+        e.preventDefault();
+        try {
+            let data;
+            if(isLogin){
+                data = await login(username,password);
+            } else {
+                data = await registration(username,password);
+            }
+            user.setUser(user);
+            user.setIsAuth(true);
+            navigate(DEVELOPER_ROUTE);
+        } catch (e) {
+            alert("Неверный логин или пароль")
         }
+
     }
 
     return (

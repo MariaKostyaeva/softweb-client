@@ -3,6 +3,7 @@ import {Button, Dropdown} from "react-bootstrap";
 import Slider from "./Slider/Slider";
 import {NavLink} from "react-router-dom";
 
+
 const AppInfo = (props) => {
 
     const [category,setCategory] = useState([]);
@@ -64,8 +65,7 @@ const AppInfo = (props) => {
             case 12: monthName = "Декабря";
                 break;
         }
-        let lastUpdate = `${date[2]} ${monthName} ${date[0]}`;
-        return lastUpdate;
+        return `${date[2]} ${monthName} ${date[0]}`;
     }
 
     useEffect(() => {
@@ -80,6 +80,7 @@ const AppInfo = (props) => {
         const lastUpdate = props.app.lastUpdate;
         setDate(lastUpdate);
     },[])
+
     return (
         <div className="w-100">
             <div className="d-flex w-100 installation-container p-4">

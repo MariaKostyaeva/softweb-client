@@ -20,10 +20,6 @@ description-container{
     display: flex;
     justify-content: space-between;
 }
-full-description{}
-.details{}
-.title{}
-.license-box{}
 .update-box{
     display: flex;
     flex-direction: column;

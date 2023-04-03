@@ -5,7 +5,6 @@ import aboutForUsers from '../assets/about_for_users.svg';
 import aboutForDevelopers from '../assets/about_for_developers.svg';
 
 const About = () => {
-
     return (
         <Container className="d-flex flex-column justify-content-center align-items-center w-100">
             <div className="m-4 p-4 mt-0 pt-0">
