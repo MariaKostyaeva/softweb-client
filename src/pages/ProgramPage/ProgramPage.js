@@ -1,15 +1,9 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react';
-import stubImg from '../../assets/stub-image.svg'
-import {Button, Dropdown} from "react-bootstrap";
-import Slider from "../../components/Slider/Slider";
+import React, {useEffect, useState} from 'react';
 import './ProgramPage.style.css';
-import image from '../../assets/logo.svg'
 import {useParams} from "react-router-dom";
 import axios from "axios";
-import {number} from "prop-types";
 import Loader from "../../components/Loader/Loader";
 import AppInfo from "../../components/AppInfo";
-import ProgramCard from "../../components/ProgramCard";
 
 const ProgramPage = () => {
     const {id} = useParams();

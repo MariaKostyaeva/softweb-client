@@ -2,9 +2,9 @@ import {
     ABOUT_ROUTE, ACCOUNT_DETAILS_ROUTE,
     ADMIN_ROUTE, ALL_PROGRAM_ROUTE,
     CATALOG_ROUTE, CATEGORY_ROUTE, CREATE_PROGRAM_ROUTE,
-    DEVELOPER_ROUTE,
+    DEVELOPER_ROUTE, FRONT_PAGE_ROUTE,
     LOGIN_ROUTE, PROGRAM_ROUTE,
-    REGISTRATION_ROUTE
+    REGISTRATION_ROUTE, SEARCH_PAGE_ROUTE
 } from "./consts";
 import Catalog from "../pages/Catalog";
 import Authorization from "../pages/Authorization";
@@ -16,6 +16,8 @@ import CreateProgramPage from "../pages/CreateProgramPage";
 import AdminPage from "../pages/AdminPage";
 import AccountDetails from "../pages/AccountDetails";
 import CategoryPage from "../pages/CategoryPage";
+import FrontPage from "../pages/FrontPage/FrontPage";
+import SearchPage from "../pages/SearchPage";
 
 export const devRoutes = [
     {
@@ -63,6 +65,14 @@ export const publicRoutes = [
     {
         path: CATALOG_ROUTE,
         Element: Catalog
+    },
+    {
+        path: FRONT_PAGE_ROUTE,
+        Element: FrontPage
+    },
+    {
+        path: SEARCH_PAGE_ROUTE,
+        Element: SearchPage
     },
     {
         path: CATEGORY_ROUTE,

@@ -1,32 +1,40 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {Button, Pagination, Table} from "react-bootstrap";
-import {$authHost, $host} from "../../http";
+import React, {useContext, useEffect, useState} from 'react';
+import {Alert, Button, Table} from "react-bootstrap";
+import {$authHost} from "../../http";
 import Loader from "../Loader/Loader";
-import '../../assets/Pagination.style.css'
+import {Context} from "../../index";
+import usePagination from "../../hooks/usePagination";
+import axios from "axios";
 
 const AllAppTable = () => {
+    const {user} = useContext(Context);
     const [applications,setApplications] = useState([]);
     const [isAppLoading,setIsAppLoading] = useState(false);
-    const [userId,setUserId] = useState();
-    const [currentPage,setCurrentPage] = useState(0);
-    const [appPerPage] = useState(5);
+    const [total,setTotal] = useState([]);
 
-    const lastAppIndex = currentPage * appPerPage;
-    const firstAppIndex = lastAppIndex - appPerPage;
-    const currentApp = applications.slice(firstAppIndex,lastAppIndex);
-    const totalPage = Math.ceil(applications.length/appPerPage);
+    const {
+        firstContentIndex,
+        lastContentIndex,
+        nextPage,
+        prevPage,
+        page,
+        totalPages,
+    } = usePagination({contentPerPage: 5, count: total['total'],});
 
-    const getUserId = () => {
-        if(localStorage.length !== 0){
-            const id = JSON.parse(localStorage.getItem('user'));
-            setUserId(id['id']);
+    const fetchTotalAppByUserId = async () => {
+        try{
+            const response = await $authHost.get(`store/v1/application/user/info?size=5&userId=${user._userId}`);
+            setTotal(response.data);
+        }
+        catch (e){
+            console.log(e);
         }
     }
 
-    async function fetchAppByUserId(){
+    const fetchAppByUserId = async () => {
         try{
             setIsAppLoading(true);
-            const response = await $authHost.get(`store/v1/application/user?page=0&1&sort=id,asc&userId=${userId}`);
+            const response = await $authHost.get(`store/v1/application/user?size=${total['total']}&sort=id,asc&userId=${user._userId}`);
             setApplications(response.data);
             setIsAppLoading(false);
         }
@@ -35,16 +43,7 @@ const AllAppTable = () => {
         }
     }
 
-    const showPrevPage = () => {
-        setCurrentPage(prev => prev - 1);
-    }
-
-    const showNextPage = () => {
-        setCurrentPage(prev => prev + 1);
-    }
-
-
-    function formatDate(newDate) {
+    const formatDate = (newDate) => {
         const date = new Date(Date.UTC(newDate[0] , newDate[1] , newDate[2]));
         const longRuRUFormatter = new Intl.DateTimeFormat('ru-RU',{
             year: 'numeric',
@@ -54,8 +53,18 @@ const AllAppTable = () => {
         return longRuRUFormatter.format(date);
     }
 
+    const deleteApp = (id) => {
+        axios.delete(`http://localhost:8072/store/v1/application/${id}`)
+            .then(() => {
+                setApplications(applications.filter(el => el.id !== id));
+                return <Alert>Приложение успешно удалено!</Alert>
+            })
+            .catch((e) => console.log(e.toString()))
+    }
+
+
     useEffect(() => {
-        getUserId();
+        fetchTotalAppByUserId();
         fetchAppByUserId();
     }, [])
 
@@ -66,20 +75,21 @@ const AllAppTable = () => {
             {isAppLoading
                 ? <Loader/>
                 :
-                <Table striped className="mb-4" responsive>
-                    <thead>
-                    <tr>
-                        <th>№</th>
-                        <th>Наименование приложения</th>
-                        <th>Лицензия</th>
-                        <th>Последнее обновление</th>
-                        <th>Количество просмотров</th>
-                        <th>Количество скачиваний</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {currentApp.map((app,index) =>
+                <div>
+                    <Table striped className="mb-4" responsive>
+                        <thead>
+                        <tr>
+                            <th>№</th>
+                            <th>Наименование приложения</th>
+                            <th>Лицензия</th>
+                            <th>Последнее обновление</th>
+                            <th>Количество просмотров</th>
+                            <th>Количество скачиваний</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {applications.slice(firstContentIndex,lastContentIndex).map((app,index) =>
                             <tr key={app.id}>
                                 <td>{index + 1}</td>
                                 <td>{app.name}</td>
@@ -92,19 +102,21 @@ const AllAppTable = () => {
                                     borderColor: "#262626",
                                     borderStyle: "solid"
                                 }}>Редактировать</Button></td>
+                                <td><Button className="rounded-0 ps-4 pe-4" variant="outline-danger" onClick={() => deleteApp(app.id)}>Удалить</Button></td>
                             </tr>
                         )}
-                    </tbody>
-                </Table>
+                        </tbody>
+                    </Table>
+                    <div className="d-flex align-items-center justify-content-between mt-4 mb-4">
+                        {
+                            lastContentIndex !== 5 && <div className="d-flex align-items-center justify-content-start w-100"><button type="button" className="btn btn-secondary rounded-0" onClick={prevPage}><i className="fa fa-chevron-left m-2 ms-0"/>Предыдущая страница</button></div>
+                        }
+                        {
+                            page !== totalPages && <div className="d-flex align-items-center justify-content-end w-100"><button type="button" className="btn btn-secondary rounded-0" onClick={nextPage}>Следующая страница<i className="fa fa-chevron-right m-2 me-0"/></button></div>
+                        }
+                    </div>
+                </div>
             }
-            <div className="d-flex align-items-center justify-content-between mt-4 mb-4">
-                {
-                    currentApp !== 0 && <div className="d-flex align-items-center justify-content-start w-100"><button type="button" className="btn btn-secondary rounded-0" onClick={() => showPrevPage()}><i className="fa fa-chevron-left m-2 ms-0"/>Предыдущая страница</button></div>
-                }
-                {
-                    currentPage !== totalPage && <div className="d-flex align-items-center justify-content-end w-100"><button type="button" className="btn btn-secondary rounded-0" onClick={() => showNextPage()}>Следующая страница<i className="fa fa-chevron-right m-2 me-0"/></button></div>
-                }
-            </div>
         </div>
     );
 };

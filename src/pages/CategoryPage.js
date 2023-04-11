@@ -1,60 +1,62 @@
 import React, {useEffect, useState} from 'react';
-import {Breadcrumb, Button, Col, Container, Row} from "react-bootstrap";
+import {Breadcrumb, Col, Container, Row} from "react-bootstrap";
 import {CATALOG_ROUTE} from "../routes/consts";
 import Loader from "../components/Loader/Loader";
-import axios from "axios";
 import {useParams} from "react-router-dom";
 import ProgramCard from "../components/ProgramCard";
+import {$host} from "../http";
+import data from "bootstrap/js/src/dom/data";
+import usePagination from "../hooks/usePagination";
+import axios from "axios";
 
 const CategoryPage = () => {
-
     const {id} = useParams();
-    const [allCategoryInfo,setAllCategoryInfo] = useState([]);
     const [isAppLoading,setIsAppLoading] = useState(false);
+    const [category,setCategory] = useState([]);
     const [applications,setApplications] = useState([]);
-    const [pageNumber,setPageNumber] = useState(0);
+    const [total,setTotal] = useState([]);
 
-    async function fetchCategoryById(){
-        try{
+    const {
+        firstContentIndex,
+        lastContentIndex,
+        nextPage,
+        prevPage,
+        page,
+        totalPages,
+    } = usePagination({contentPerPage: 9, count: total['total'],});
+
+    const fetchCategoryById = async () => {
+        try {
+            const response = await $host.get(`store/v1/category/${id}`);
+            setCategory(response.data);
+        } catch (e) {
+            console.log(e.toString())
+        }
+    }
+
+    const fetchTotalInfoQtyApp = async () => {
+        await axios.get(`http://localhost:8072/store/v1/application/category/info?size=9&categoryId=${id}`)
+            .then((res) => {
+                setTotal(res.data)
+                fetchAppByCategory(res.data)
+            })
+            .catch((e) => console.log(e.toString()))
+    }
+
+    const fetchAppByCategory = async (total) => {
+        try {
             setIsAppLoading(true);
-            const response = await axios.get(`http://localhost:8072/store/v1/category/${id}`);
-            setAllCategoryInfo(response.data);
+            const response = await $host.get(`store/v1/application/category?size=${total['total']}&sort=id,asc&categoryId=${id}`);
+            setApplications(response.data)
             setIsAppLoading(false);
-        }
-        catch (e){
-            console.log(e);
-        }
-    }
-    async function fetchAppByCategory(pageNumber){
-        try{
-            setIsAppLoading(true);
-            const response = await axios.get(`http://localhost:8072/store/v1/application/category?page=${pageNumber}&size=5&sort=id,asc&categoryId=${id}`);
-            setApplications(response.data);
-            console.log(response.data)
-            setIsAppLoading(false);
-        }
-        catch (e){
-            console.log(e);
-        }
-    }
-
-    const showPrevPage = () => {
-        if(pageNumber > 0){
-            setPageNumber(pageNumber - 1);
-            fetchAppByCategory(pageNumber);
-        }
-    }
-
-    const showNextPage = () => {
-        if(applications.length !==0){
-            setPageNumber(pageNumber + 1);
-            fetchAppByCategory(pageNumber);
+        } catch (e) {
+            console.log(e.toString())
         }
     }
 
     useEffect(() => {
         fetchCategoryById();
-        fetchAppByCategory(pageNumber);
+        fetchTotalInfoQtyApp();
     }, [])
 
     return (
@@ -66,25 +68,28 @@ const CategoryPage = () => {
                         <div>
                             <Breadcrumb>
                                 <Breadcrumb.Item href={CATALOG_ROUTE}>Категории</Breadcrumb.Item>
-                                <Breadcrumb.Item active>{allCategoryInfo.name}</Breadcrumb.Item>
+                                <Breadcrumb.Item active>{category.name}</Breadcrumb.Item>
                             </Breadcrumb>
                             <p style={{fontSize:32, fontWeight:"normal"}}>
-                                {allCategoryInfo.name}
+                                {category.name}
                             </p>
                             <div className="d-flex w-100 mb-4">
-                                <img src={allCategoryInfo.image} className="w-100" style={{maxHeight: 290}}/>
+                                <img src={category.image} className="w-100" style={{maxHeight: 290}} alt={`Изображение категории ${category.name}`} />
                             </div>
                             <Row className="mt-4 ms-2 me-2">
-                                {applications.map((app) =>
-                                    <ProgramCard app={app} key={app.id}/>
-                                )}
+                                {
+                                    applications.slice(firstContentIndex,lastContentIndex).map((el:any) => (
+                                        <ProgramCard app={el} key={el.id}/>
+                                    ))
+                                }
+
                             </Row>
                             <div className="d-flex align-items-center justify-content-between mt-4 mb-4">
                                 {
-                                    pageNumber > 0 && <div className="d-flex align-items-center justify-content-start w-100"><button type="button" className="btn btn-secondary rounded-0" onClick={() => showPrevPage()}><i className="fa fa-chevron-left m-2 ms-0"/>Предыдущая страница</button></div>
+                                    lastContentIndex !== 9 && <div className="d-flex align-items-center justify-content-start w-100"><button type="button" className="btn btn-secondary rounded-0" onClick={prevPage}><i className="fa fa-chevron-left m-2 ms-0"/>Предыдущая страница</button></div>
                                 }
                                 {
-                                    applications.length !== 0 && <div className="d-flex align-items-center justify-content-end w-100"><button type="button" className="btn btn-secondary rounded-0" onClick={() => showNextPage()}>Следующая страница<i className="fa fa-chevron-right m-2 me-0"/></button></div>
+                                    page !== totalPages && <div className="d-flex align-items-center justify-content-end w-100"><button type="button" className="btn btn-secondary rounded-0" onClick={nextPage}>Следующая страница<i className="fa fa-chevron-right m-2 me-0"/></button></div>
                                 }
                             </div>
                         </div>

@@ -1,0 +1,179 @@
+.main-container{
+    background-image: linear-gradient(to bottom left,
+    rgba(255,255,255,0.03) 0%,
+    rgba(255,255,255,0.03) 49.9%,
+    rgba(255,255,255,0) 50%,
+    rgba(255,255,255,0) 100%),
+    linear-gradient(to top left,
+    rgba(255,255,255,0.03%) 0%,
+    rgba(225,255,255,0.03) 49.9%,
+    rgba(255,255,255,0) 50%,
+    rgba(255,255,255,0) 100%),
+linear-gradient(10deg, #00302f,#006361);
+    background-position: top right, bottom right;
+    background-repeat: no-repeat;
+    background-size: 80% 70%, 80% 75%, 100% auto;
+    padding: 1vw 15vw 2vw 15vw;
+}
+.main-container::after{
+    background-image: url("https://assets.ubuntu.com/v1/077b5e59-hero-bg-mask-snapcraft--white-orange--bigger-accent.svg");
+    background-position: 100% 100%;
+    background-repeat: no-repeat;
+    bottom: -3px;
+    content: '';
+    left: -3px;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: -3px;
+    /*z-index: 1;*/
+}
+.text-color{
+    color: #ffffff;
+}
+.link:hover{
+    color: #ffffff;
+    text-underline-offset: 2px;
+    text-decoration: 1px underline;
+}
+.programCard-box{
+    display: flex;
+    flex-flow: column;
+}
+
+.btn-link{
+    display: flex;
+    justify-content: flex-start;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #ffffff;
+    text-decoration: none;
+    padding-left: 10px;
+    font-weight: 400;
+}
+
+.btn-link:hover,
+.btn-link:focus,
+.btn-link:active{
+    background: none;
+    color: #ffffff;
+    border: 0;
+    transition: 0.3ms;
+}
+
+.btn-light{
+    border: 1px #fff solid;
+    background: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+    outline: none;
+}
+.btn-light:hover,
+.btn-light:focus,
+.btn-light:active{
+    background-color: rgba(255,255,255,10%);
+    border: 1px #fff solid;
+    color: #ffffff;
+    outline: none;
+}
+
+.line{
+    border-top: 1px #ffffff solid;
+    opacity: .5;
+    width: 100%;
+}
+.line:hover{
+    color: #ffffff;
+    border-top: 1px rgba(255,255,255,50%) solid;
+    opacity: 1;
+}
+.active-item{
+    color: #ffffff;
+    border-top: 3px #EB5322 solid;
+    border-radius: 2px;
+    padding-left: 1px;
+    padding-right: 1px;
+    opacity: 1;
+    width: 100%;
+}
+
+.category-box{
+    display: flex;
+    flex-flow: column;
+    height: 60px;
+}
+
+.search-box{
+    width: 100%;
+}
+@media (min-width: 769px) {
+    .box{
+        display: flex;
+        justify-content: flex-end;
+    }
+    .programCard-box{
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+    }
+    .category-box{
+        display: flex;
+        flex-flow: row;
+        margin-top: 0;
+    }
+    .search-box{
+        width: 65%;
+    }
+
+    .main-container{
+        padding: 4rem 0 8rem;
+        margin-top: -3px;
+        min-height: 30vh;
+        overflow: hidden;
+        position: relative;
+        clear: both;
+    }
+    .main-container::after{
+        background-position: 100% 100%;
+        background-repeat: no-repeat;
+        bottom: -3px;
+        content: '';
+        left: -3px;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        background-size: auto 9rem;
+        top: -3px;
+        z-index: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-container{
+        padding: 4rem 0 8rem;
+        position: relative;
+        clear: both;
+    }
+    .main-container::after{
+        background-size: auto 8rem;
+    }
+}
+
+@media (min-width: 1400px) {
+    .main-container:after{
+        background-position: 100% 100%;
+        background-repeat: no-repeat;
+        bottom: -3px;
+        content: '';
+        left: -3px;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        background-size: 100%;
+        top: -3px;
+        z-index: 1;
+    }
+}

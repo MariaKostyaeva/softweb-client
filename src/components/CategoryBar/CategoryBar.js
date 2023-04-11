@@ -2,7 +2,6 @@ import React from 'react';
 import {observer} from "mobx-react-lite";
 import {Container} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
-import {CATEGORY_ROUTE} from "../../routes/consts";
 
 const CategoryBar = observer((props) => {
     const navigate = useNavigate();

@@ -1,26 +1,111 @@
-import React, {useState} from 'react';
-import {Button, FloatingLabel, Form} from "react-bootstrap";
-import {login, registration} from "../../http/userAPI";
-import axios, {post} from "axios";
+import React, {useEffect, useState} from 'react';
+import {Button, Form} from "react-bootstrap";
+import Select, {OnChangeValue} from "react-select";
+import {$authHost, $host} from "../../http";
+import {Buffer} from "buffer";
+import {addNewApp} from "../../http/userAPI";
+
 
 const CreateAppForm = () => {
 
+    const [applicationId] = useState('1');
     const [logo,setLogo] = useState('');
     const [name,setName] = useState('');
     const [shortDescription,setShortDescription] = useState('');
     const [longDescription,setLongDescription] = useState('');
-    const [licenseCode,setLicenseCode] = useState('1');
-    const [categoryId,setCategoryId] = useState('1');
-    const [images,setImages] = useState('');
-    const [id] = useState('1');
+    const [licenses,setLicenses] = useState([]);
+    const [currentLicense,setCurrentLicense] = useState('');
+    const [categories,setCategories] = useState([]);
+    const [currentCategory,setCurrentCategory] = useState('');
+    const [images,setImages] = useState([]);
+    const [applicationInfo,setApplicationInfo] = useState([]);
+    const [installer,setInstaller] = useState('');
+    const [version,setVersion] = useState('');
+    const [systemId] = useState('1');
 
-    const createNewApp = async () => {
-        console.log(logo,name,shortDescription,longDescription,licenseCode,categoryId)
-        const response = await axios.post('http://localhost:8072/store/v1/application');
-        console.log(response)
+    console.log(applicationInfo)
+    const fetchData = async () => {
+        try{
+            const license = await $authHost.get(`store/v1/license`);
+            setLicenses(license.data);
+            const category = await $authHost.get('store/v1/category');
+            setCategories(category.data);
+        }
+        catch (e){
+            console.log(e.toString());
+        }
     }
 
-    return (
+   const optionsForLicense = [];
+    licenses.map(license => {
+        optionsForLicense.push({
+            value: license.code,
+            label: license.name
+        })
+    });
+
+    const optionsForCategory = [];
+     categories.map(category => {
+        optionsForCategory.push({
+            value: category.id,
+            label: category.name
+        })
+    });
+
+   const getLicenseValue = () => {
+       return currentLicense ? optionsForLicense.find(l => l.label === currentLicense) : '';
+   }
+   const onChangeLicense = (newValue:any) => {
+       setCurrentLicense(newValue.value);
+   }
+
+    const getCategoryValue = () => {
+       return currentCategory ? optionsForCategory.find(c => c.label === currentCategory) : '';
+    }
+    const onChangeCategory = (newValue:any) => {
+       setCurrentCategory(newValue.value)
+    }
+
+
+    const getInfoAboutApp = () => {
+        const appInfo = {
+            logo,
+            name,
+            shortDescription,
+            longDescription,
+            currentLicense,
+            currentCategory
+        };
+        setApplicationInfo([appInfo]);
+    }
+
+    const addApp = async (e) => {
+       e.preventDefault();
+       getInfoAboutApp();
+
+        // const appImages = {
+        //     images,
+        //     applicationId
+        // };
+        // setImages([appImages]);
+        //
+        // const appInstaller = {
+        //     installer,
+        //     applicationId,
+        //     systemId,
+        //     version
+        // }
+        // setInstaller([appInstaller])
+    }
+
+
+
+
+   useEffect(() => {
+       fetchData();
+   },[])
+
+   return (
         <Form className="w-100 mb-4">
             <h5>Добавление приложения</h5>
             <hr/>
@@ -36,23 +121,38 @@ const CreateAppForm = () => {
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appLicense">Лицензия</Form.Label>
-                <Form.Select
-                    id="appLicense"
-                    className="rounded-0"
-                    value={licenseCode}
-                    onChange={e=>setLicenseCode(licenseCode)}
-                >
-                    <option>The Parity Public License 7.0.0 (Parity-7.0.0)</option>
-                </Form.Select>
+                <Select
+                    options={optionsForLicense}
+                    onChange={onChangeLicense}
+                    value={getLicenseValue()}
+                    noOptionsMessage={({inputValue}) => !inputValue ? {optionsForLicense} : "Лицензия не найдена"}
+                    placeholder="Выберите лицензию"
+                    theme={
+                        theme => ({
+                            ...theme,
+                            borderRadius:0
+                        })
+                    }
+                />
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appShortDescription">Краткая информация</Form.Label>
                 <Form.Control
                     className="rounded-0"
                     id="appShortDescription"
-                    placeholder="Опиши меня в двух словах"
+                    placeholder="Опишите меня в двух словах"
                     value={shortDescription}
                     onChange={e => setShortDescription(e.target.value)}
+                />
+            </Form.Group>
+            <Form.Group className="mb-3">
+                <Form.Label htmlFor="appVersion">Укажите версию приложения</Form.Label>
+                <Form.Control
+                    className="rounded-0"
+                    id="appVersion"
+                    placeholder="Тут должна быть версия"
+                    value={version}
+                    onChange={e => setVersion(e.target.value)}
                 />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -61,26 +161,26 @@ const CreateAppForm = () => {
                     as="textarea"
                     className="rounded-0"
                     id="appLongDescription"
-                    placeholder="Расскажи обо мне ;)"
+                    placeholder="Расскажите обо мне ;)"
                     value={longDescription}
                     onChange={e => setLongDescription(e.target.value)}
                 />
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appCategory">Категория приложения</Form.Label>
-                <Form.Select
-                    id="appCategory"
-                    className="rounded-0"
-                    value={categoryId}
-                    onChange={e => setCategoryId(categoryId)}
-                >
-                    <option id={1}>Разработка</option>
-                    <option id={2}>Игры</option>
-                    <option id={3}>Творчество</option>
-                    <option id={4}>Социальные сети</option>
-                    <option id={5}>Продуктивность</option>
-                    <option id={6}>Безопасность</option>
-                </Form.Select>
+                <Select
+                    options={optionsForCategory}
+                    onChange={onChangeCategory}
+                    value={getCategoryValue()}
+                    noOptionsMessage={({inputValue}) => !inputValue ? {optionsForCategory} : "Категория не найдена"}
+                    placeholder="Выберите категорию"
+                    theme={
+                        theme => ({
+                            ...theme,
+                            borderRadius:0
+                        })
+                    }
+                />
             </Form.Group>
             <Form.Group controlId="appImage" className="mb-3">
                 <Form.Label>Иконка для приложения</Form.Label>
@@ -97,13 +197,23 @@ const CreateAppForm = () => {
                     type="file"
                     className="rounded-0"
                     multiple
+                    onChange={e => setImages(e.target.files)}
+                />
+            </Form.Group>
+            <Form.Group controlId="appInstaller" className="mb-3">
+                <Form.Label>Добавьте свое приложение</Form.Label>
+                <Form.Control
+                    type="file"
+                    className="rounded-0"
+                    value={installer}
+                    onChange={e => setInstaller(e.target.value)}
                 />
             </Form.Group>
             <div className="d-flex justify-content-end w-100">
                 <Button
                     className="btn-primary rounded-0 ps-4 pe-4"
                     variant="success"
-                    onClick={createNewApp}
+                    onClick={addApp}
                 >Добавить</Button>
             </div>
         </Form>

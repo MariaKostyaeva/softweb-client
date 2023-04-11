@@ -85,3 +85,7 @@ ul{
     background-color: rgba(0,0,0,.10);
 }
 
+.link-hover:hover{
+    text-underline-offset: 2px;
+    text-decoration: 1px underline;
+}

@@ -3,7 +3,7 @@ import {Button, Card, Container, Form, Row} from "react-bootstrap";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {CATALOG_ROUTE, DEVELOPER_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE} from "../routes/consts";
 import '../assets/App.css';
-import {login, registration} from "../http/userAPI";
+import {authorization, registration} from "../http/userAPI";
 import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 
@@ -12,7 +12,8 @@ const Authorization = observer(() => {
     const location = useLocation();
     const navigate = useNavigate();
     const isLogin = location.pathname === LOGIN_ROUTE
-    const [username,setUsername] = useState('');
+    const [username,setUserName] = useState('');
+    const [fullName,setFullName] = useState('');
     const [password,setPassword] = useState('');
 
 
@@ -21,13 +22,14 @@ const Authorization = observer(() => {
         try {
             let data;
             if(isLogin){
-                data = await login(username,password);
+                data = await authorization(username,password);
+                navigate(CATALOG_ROUTE);
             } else {
-                data = await registration(username,password);
+                data = await registration(username, fullName, password);
+                navigate(LOGIN_ROUTE)
             }
             user.setUser(user);
             user.setIsAuth(true);
-            navigate(DEVELOPER_ROUTE);
         } catch (e) {
             alert("Неверный логин или пароль")
         }
@@ -42,11 +44,20 @@ const Authorization = observer(() => {
                 <Form className="d-flex flex-column">
                     <Form.Control
                         className="mt-3 rounded-0"
-                        type="login"
-                        placeholder="Имя пользователя "
+                        type="username"
+                        placeholder="Логин"
                         value={username}
-                        onChange={e => setUsername(e.target.value)}
+                        onChange={e => setUserName(e.target.value)}
                     />
+                    {!isLogin &&
+                        <Form.Control
+                        className="mt-3 rounded-0"
+                        type="fullName"
+                        placeholder="Полное имя пользователя "
+                        value={fullName}
+                        onChange={e => setFullName(e.target.value)}
+                        />
+                    }
                     <Form.Control
                         className="mt-3 rounded-0"
                         type="password"

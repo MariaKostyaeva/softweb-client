@@ -5,6 +5,8 @@ export default class UserStore{
         this._isAuth = false;
         this._isAdmin = false;
         this._user = {};
+        this._userId = '';
+        this._username = '';
         makeAutoObservable(this)
     }
     setIsAuth(bool){
@@ -17,6 +19,13 @@ export default class UserStore{
         this._user = user
     }
 
+    setUserId(int){
+        this._userId = int
+    }
+    setUsername(string){
+        this._username = string
+    }
+
     get isAuth(){
         return this._isAuth
     }
@@ -25,5 +34,12 @@ export default class UserStore{
     }
     get user(){
         return this._user
+    }
+    getUserId(){
+        return this._userId
+    }
+
+    getUsername(){
+        return this._username
     }
 }

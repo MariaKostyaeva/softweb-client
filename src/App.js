@@ -3,22 +3,26 @@ import {BrowserRouter} from "react-router-dom";
 import AppRouter from "./routes/AppRouter";
 import './assets/App.css';
 import NavBar from "./components/NavBar/NavBar";
-import Catalog from "./pages/Catalog";
 import Footer from "./components/Footer/Footer";
 import {observer} from "mobx-react-lite";
 import {Context} from "./index";
-import {check, login} from "./http/userAPI";
-import data from "bootstrap/js/src/dom/data";
+import {check} from "./http/userAPI";
 import Loader from "./components/Loader/Loader";
+import FrontPage from "./pages/FrontPage/FrontPage";
 
 const App = observer(() => {
     const {user} = useContext(Context);
+    const userInfo = JSON.parse(localStorage.getItem('user'));
     const [loading,setLoading] = useState(true);
 
     useEffect(() => {
         check().then(() => {
             user.setUser(true)
             user.setIsAuth(true)
+            if(userInfo !== null){
+                user.setUserId(userInfo['id']);
+                user.setUsername(userInfo['fullName']);
+            }
         }).finally(() => setLoading(false))
     }, []);
 
@@ -32,7 +36,7 @@ const App = observer(() => {
                 <NavBar/>
                 <div className="content-wrap">
                     <AppRouter>
-                        <Catalog/>
+                        <FrontPage/>
                     </AppRouter>
                 </div>
                 <Footer/>
