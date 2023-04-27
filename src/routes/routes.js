@@ -1,7 +1,7 @@
 import {
     ABOUT_ROUTE, ACCOUNT_DETAILS_ROUTE,
-    ADMIN_ROUTE, ALL_PROGRAM_ROUTE,
-    CATALOG_ROUTE, CATEGORY_ROUTE, CREATE_PROGRAM_ROUTE,
+    ADMIN_ROUTE,
+    CATALOG_ROUTE, CATEGORY_ROUTE,
     DEVELOPER_ROUTE, FRONT_PAGE_ROUTE,
     LOGIN_ROUTE, PROGRAM_ROUTE,
     REGISTRATION_ROUTE, SEARCH_PAGE_ROUTE
@@ -11,8 +11,6 @@ import Authorization from "../pages/Authorization";
 import About from "../pages/About";
 import ProgramPage from "../pages/ProgramPage/ProgramPage";
 import DeveloperPage from "../pages/DeveloperPage";
-import AllProgramPage from "../pages/AllProgramPage";
-import CreateProgramPage from "../pages/CreateProgramPage";
 import AdminPage from "../pages/AdminPage";
 import AccountDetails from "../pages/AccountDetails";
 import CategoryPage from "../pages/CategoryPage";
@@ -27,14 +25,6 @@ export const devRoutes = [
     {
         path: ACCOUNT_DETAILS_ROUTE,
         Element: AccountDetails
-    },
-    {
-        path: ALL_PROGRAM_ROUTE,
-        Element: AllProgramPage
-    },
-    {
-        path: CREATE_PROGRAM_ROUTE,
-        Element: CreateProgramPage
     }
 ]
 
@@ -46,14 +36,6 @@ export const adminRoutes = [
     {
         path: ACCOUNT_DETAILS_ROUTE,
         Element: AccountDetails
-    },
-    {
-        path: ALL_PROGRAM_ROUTE,
-        Element: AllProgramPage
-    },
-    {
-        path: CREATE_PROGRAM_ROUTE,
-        Element: CreateProgramPage
     },
     {
         path: ADMIN_ROUTE,

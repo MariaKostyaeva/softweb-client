@@ -3,13 +3,12 @@ import {Button, Form} from "react-bootstrap";
 import Select, {OnChangeValue} from "react-select";
 import {$authHost, $host} from "../../http";
 import {Buffer} from "buffer";
-import {addNewApp} from "../../http/userAPI";
+import axios from "axios";
 
 
 const CreateAppForm = () => {
 
-    const [applicationId] = useState('1');
-    const [logo,setLogo] = useState('');
+    const [logo,setLogo] = useState(null);
     const [name,setName] = useState('');
     const [shortDescription,setShortDescription] = useState('');
     const [longDescription,setLongDescription] = useState('');
@@ -17,13 +16,20 @@ const CreateAppForm = () => {
     const [currentLicense,setCurrentLicense] = useState('');
     const [categories,setCategories] = useState([]);
     const [currentCategory,setCurrentCategory] = useState('');
-    const [images,setImages] = useState([]);
-    const [applicationInfo,setApplicationInfo] = useState([]);
-    const [installer,setInstaller] = useState('');
+    const [images,setImages] = useState(null);
+    const [installer,setInstaller] = useState(null);
     const [version,setVersion] = useState('');
-    const [systemId] = useState('1');
+    const [systemId,setSystemId] = useState('1');
 
-    console.log(applicationInfo)
+
+    const userAuthData = JSON.parse(localStorage.getItem('authData'));
+    const encodedCred = Buffer.from(userAuthData.username + ':' + userAuthData.password).toString('base64');
+    const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Basic ${encodedCred}`
+    };
+
     const fetchData = async () => {
         try{
             const license = await $authHost.get(`store/v1/license`);
@@ -66,40 +72,60 @@ const CreateAppForm = () => {
        setCurrentCategory(newValue.value)
     }
 
+    const addInstaller = async (id) => {
+        const installerFormData = new FormData();
+        installerFormData.append('file', installer);
+        installerFormData.append('applicationId', id);
+        installerFormData.append('systemId', systemId);
+        installerFormData.append('version', version);
 
-    const getInfoAboutApp = () => {
-        const appInfo = {
-            logo,
-            name,
-            shortDescription,
-            longDescription,
-            currentLicense,
-            currentCategory
-        };
-        setApplicationInfo([appInfo]);
+        await axios.post('http://localhost:8072/store/v1/installer/upload', installerFormData, {headers})
+            .then(response => {
+                alert('Установщики успешно добавлены!');
+                console.log(response.data)
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
+
+    }
+
+    const addImages = async (id) => {
+        const appImagesFormData = new FormData();
+        appImagesFormData.append('files', images);
+        appImagesFormData.append('applicationId', id);
+
+        await axios.post('http://localhost:8072/store/v1/image/uploadMultiple', appImagesFormData, {headers})
+            .then(response => {
+                alert('Изображения успешно добавлены!');
+                console.log(response.data)
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
     }
 
     const addApp = async (e) => {
        e.preventDefault();
-       getInfoAboutApp();
+       const appFormData = new FormData();
+       appFormData.append('logo', logo);
+        appFormData.append('name', name);
+        appFormData.append('shortDescription', shortDescription);
+        appFormData.append('longDescription', longDescription);
+        appFormData.append('licenseCode', currentLicense);
+        appFormData.append('categoryId', currentCategory);
 
-        // const appImages = {
-        //     images,
-        //     applicationId
-        // };
-        // setImages([appImages]);
-        //
-        // const appInstaller = {
-        //     installer,
-        //     applicationId,
-        //     systemId,
-        //     version
-        // }
-        // setInstaller([appInstaller])
+
+        await axios.post('http://localhost:8072/store/v1/application', appFormData, {headers})
+            .then(response => {
+                addInstaller(response.data['id']);
+                addImages(response.data['id']);
+                console.log(response.data)
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
     }
-
-
-
 
    useEffect(() => {
        fetchData();
@@ -114,6 +140,7 @@ const CreateAppForm = () => {
                 <Form.Control
                     className="rounded-0"
                     id="appName"
+                    autoComplete="off"
                     placeholder="Введите наименование приложения"
                     value={name}
                     onChange={e => setName(e.target.value)}
@@ -138,6 +165,7 @@ const CreateAppForm = () => {
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appShortDescription">Краткая информация</Form.Label>
                 <Form.Control
+                    autoComplete="off"
                     className="rounded-0"
                     id="appShortDescription"
                     placeholder="Опишите меня в двух словах"
@@ -148,6 +176,7 @@ const CreateAppForm = () => {
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appVersion">Укажите версию приложения</Form.Label>
                 <Form.Control
+                    autoComplete="off"
                     className="rounded-0"
                     id="appVersion"
                     placeholder="Тут должна быть версия"
@@ -187,8 +216,8 @@ const CreateAppForm = () => {
                 <Form.Control
                     type="file"
                     className="rounded-0"
-                    value={logo}
-                    onChange={e => setLogo(e.target.value)}
+                    onChange={e => setLogo(e.target.files[0])}
+                    accept="image/*,.png,.jpg,.gif,.web,.svg"
                 />
             </Form.Group>
             <Form.Group controlId="appImages" className="mb-3">
@@ -197,6 +226,7 @@ const CreateAppForm = () => {
                     type="file"
                     className="rounded-0"
                     multiple
+                    accept="image/*,.png,.jpg,.gif,.web,.svg"
                     onChange={e => setImages(e.target.files)}
                 />
             </Form.Group>
@@ -205,8 +235,8 @@ const CreateAppForm = () => {
                 <Form.Control
                     type="file"
                     className="rounded-0"
-                    value={installer}
-                    onChange={e => setInstaller(e.target.value)}
+                    accept=".exe,.deb,.tar.gz,.apk,.ipa"
+                    onChange={e => setInstaller(e.target.files[0])}
                 />
             </Form.Group>
             <div className="d-flex justify-content-end w-100">

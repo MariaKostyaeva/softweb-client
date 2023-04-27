@@ -1,16 +1,19 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Alert, Button, Table} from "react-bootstrap";
+import {Button, Table} from "react-bootstrap";
 import {$authHost} from "../../http";
 import Loader from "../Loader/Loader";
 import {Context} from "../../index";
 import usePagination from "../../hooks/usePagination";
 import axios from "axios";
+import {Buffer} from "buffer";
+import Modal from "../Modal.tsx";
 
 const AllAppTable = () => {
     const {user} = useContext(Context);
     const [applications,setApplications] = useState([]);
     const [isAppLoading,setIsAppLoading] = useState(false);
     const [total,setTotal] = useState([]);
+    const [removedItem,setRemovedItem] = useState(null);
 
     const {
         firstContentIndex,
@@ -53,15 +56,30 @@ const AllAppTable = () => {
         return longRuRUFormatter.format(date);
     }
 
-    const deleteApp = (id) => {
-        axios.delete(`http://localhost:8072/store/v1/application/${id}`)
-            .then(() => {
-                setApplications(applications.filter(el => el.id !== id));
-                return <Alert>Приложение успешно удалено!</Alert>
-            })
-            .catch((e) => console.log(e.toString()))
+    const deleteApp = async () => {
+        if(removedItem){
+            const userAuthData = JSON.parse(localStorage.getItem('authData'));
+            const encodedCred = Buffer.from(userAuthData.username + ':' + userAuthData.password).toString('base64');
+            const headers = {
+                'Accept': 'application/json',
+                'Authorization': `Basic ${encodedCred}`
+            };
+            await axios.delete(`http://localhost:8072/store/v1/application/${removedItem.id}`, {headers})
+                .then(response => {
+                    setApplications((applications) => applications.filter(item => item.id !== removedItem.id));
+                    alert("Приложение успешно удалено!");
+                })
+                .catch(error => {
+                    alert("Ошибка удаления!")
+                    console.error('There was an error!', error);
+                });
+        }
+        setRemovedItem(null);
     }
 
+    const closeModal = () => {
+        setRemovedItem(null);
+    }
 
     useEffect(() => {
         fetchTotalAppByUserId();
@@ -76,6 +94,7 @@ const AllAppTable = () => {
                 ? <Loader/>
                 :
                 <div>
+                    <Modal active={!!removedItem} app={removedItem} onClose={closeModal} onSubmit={deleteApp}/>
                     <Table striped className="mb-4" responsive>
                         <thead>
                         <tr>
@@ -102,7 +121,7 @@ const AllAppTable = () => {
                                     borderColor: "#262626",
                                     borderStyle: "solid"
                                 }}>Редактировать</Button></td>
-                                <td><Button className="rounded-0 ps-4 pe-4" variant="outline-danger" onClick={() => deleteApp(app.id)}>Удалить</Button></td>
+                                <td><Button className="rounded-0 ps-4 pe-4" variant="outline-danger" onClick={() => setRemovedItem(app)}>Удалить</Button></td>
                             </tr>
                         )}
                         </tbody>
