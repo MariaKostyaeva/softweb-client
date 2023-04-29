@@ -29,7 +29,6 @@ const App = observer(() => {
     if(loading){
         return <Loader/>
     }
-
     return (
         <div className="page-container">
             <BrowserRouter>

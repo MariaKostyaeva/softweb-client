@@ -5,6 +5,7 @@ import ProgramCard from "../components/ProgramCard";
 import Loader from "../components/Loader/Loader";
 import {$host} from "../http";
 import Search from "../components/Search";
+import axios from "axios";
 
 const Catalog = () => {
 
@@ -30,7 +31,7 @@ const Catalog = () => {
         try{
             setIsAppLoading(true);
             for(let i = 1; i < categories.length + 1; i++){
-                const response = await $host.get(`store/v1/application/category?page=0&size=6&sort=id,asc&categoryId=${i}`);
+                const response = await axios.get(`http://localhost:8072/store/v1/application/category?page=0&size=6&sort=id,asc&categoryId=${i}`);
                 localStorage.setItem(`${i}`, JSON.stringify(response.data))
             }
             setIsAppLoading(false);

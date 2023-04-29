@@ -13,12 +13,12 @@ import Logo from "../../assets/logo.svg";
 import {observer} from "mobx-react-lite";
 import {Context} from "../../index";
 import {check} from "../../http/userAPI";
+import Loader from "../Loader/Loader";
 const NavBar = observer(() => {
     const {user} = useContext(Context);
     const navigate = useNavigate();
     const [isActive, setIsActive] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const visitor = localStorage.getItem('user');
 
     const isMobile = {
         Android: function () {
@@ -72,7 +72,8 @@ const NavBar = observer(() => {
         user.setIsAuth(false);
         user.setUsername('');
         user.setUserId('');
-        localStorage.clear();
+        localStorage.removeItem('authData');
+        localStorage.removeItem('user');
         navigate(CATALOG_ROUTE);
     }
 
@@ -96,12 +97,12 @@ const NavBar = observer(() => {
                             <li><NavLink to={CATALOG_ROUTE} className="menu_link">Магазин</NavLink></li>
                             <li><NavLink to={ABOUT_ROUTE} className="menu_link">О сайте</NavLink></li>
                             <li>
-                                {visitor && visitor !== 'undefined'
+                                {user._isAuth === true
                                     ? <div className="menu_link">{user._username}</div>
                                     : <NavLink to={LOGIN_ROUTE} className="menu_link"><i className="fa-regular fa-user me-2"></i>Аккаунт разработчика</NavLink>
                                 }
                                 <span className={isActive ? 'menu_arrow _active' : 'menu_arrow'}></span>
-                                {visitor && visitor !== 'undefined' &&
+                                {user._isAuth === true &&
                                     <ul className="menu_sub-list">
                                         <li><NavLink to={DEVELOPER_ROUTE} className="menu_sub-link">Управление приложениями</NavLink></li>
                                         <li><NavLink to={ACCOUNT_DETAILS_ROUTE} className="menu_sub-link">Данные учетной записи</NavLink></li>

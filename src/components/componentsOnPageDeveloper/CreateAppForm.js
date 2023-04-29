@@ -81,8 +81,7 @@ const CreateAppForm = () => {
 
         await axios.post('http://localhost:8072/store/v1/installer/upload', installerFormData, {headers})
             .then(response => {
-                alert('Установщики успешно добавлены!');
-                console.log(response.data)
+                console.log("Установщики добавлены!",response.data)
             })
             .catch(error => {
                 console.error('There was an error!', error);
@@ -92,13 +91,14 @@ const CreateAppForm = () => {
 
     const addImages = async (id) => {
         const appImagesFormData = new FormData();
-        appImagesFormData.append('files', images);
+        Array.from(images).forEach(file => {
+           appImagesFormData.append('files', file);
+        });
         appImagesFormData.append('applicationId', id);
 
         await axios.post('http://localhost:8072/store/v1/image/uploadMultiple', appImagesFormData, {headers})
             .then(response => {
-                alert('Изображения успешно добавлены!');
-                console.log(response.data)
+                console.log('Изображения добавлены!',response.data)
             })
             .catch(error => {
                 console.error('There was an error!', error);
@@ -121,12 +121,26 @@ const CreateAppForm = () => {
                 addInstaller(response.data['id']);
                 addImages(response.data['id']);
                 console.log(response.data)
+                alert('Приложение успешно добавлено!');
             })
             .catch(error => {
                 console.error('There was an error!', error);
             });
     }
 
+    const handleClick = async (e) => {
+       await addApp(e);
+       setLogo(null);
+       setName('');
+       setShortDescription('');
+       setLongDescription('');
+       setCurrentLicense('');
+       setCurrentCategory('');
+       setInstaller(null);
+       setImages(null);
+       setVersion('');
+       setSystemId('1');
+    }
    useEffect(() => {
        fetchData();
    },[])
@@ -243,7 +257,7 @@ const CreateAppForm = () => {
                 <Button
                     className="btn-primary rounded-0 ps-4 pe-4"
                     variant="success"
-                    onClick={addApp}
+                    onClick={handleClick}
                 >Добавить</Button>
             </div>
         </Form>

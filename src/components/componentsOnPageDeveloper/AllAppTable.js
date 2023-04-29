@@ -7,6 +7,8 @@ import usePagination from "../../hooks/usePagination";
 import axios from "axios";
 import {Buffer} from "buffer";
 import Modal from "../Modal.tsx";
+import {forEach} from "react-bootstrap/ElementChildren";
+import EditAppForm from "../EditAppForm";
 
 const AllAppTable = () => {
     const {user} = useContext(Context);
@@ -14,6 +16,14 @@ const AllAppTable = () => {
     const [isAppLoading,setIsAppLoading] = useState(false);
     const [total,setTotal] = useState([]);
     const [removedItem,setRemovedItem] = useState(null);
+    const [editedItem,setEditedItem] = useState(null);
+
+    const userAuthData = JSON.parse(localStorage.getItem('authData'));
+    const encodedCred = Buffer.from(userAuthData.username + ':' + userAuthData.password).toString('base64');
+    const headers = {
+        'Accept': 'application/json',
+        'Authorization': `Basic ${encodedCred}`
+    };
 
     const {
         firstContentIndex,
@@ -58,12 +68,24 @@ const AllAppTable = () => {
 
     const deleteApp = async () => {
         if(removedItem){
-            const userAuthData = JSON.parse(localStorage.getItem('authData'));
-            const encodedCred = Buffer.from(userAuthData.username + ':' + userAuthData.password).toString('base64');
-            const headers = {
-                'Accept': 'application/json',
-                'Authorization': `Basic ${encodedCred}`
-            };
+            Array.from(removedItem.images).forEach(file => {
+                axios.delete(`http://localhost:8072/store/v1/image/${file.id}`, {headers})
+                    .then(() => {
+                        console.log('Изображения успешно удалены!')
+                    })
+                    .catch(error => {
+                        alert("Ошибка удаления!")
+                        console.error('There was an error!', error);
+                    });
+            });
+            await axios.delete(`http://localhost:8072/store/v1/installer/${removedItem.id}`, {headers})
+                .then(() => {
+                    console.log('Установщики успешно удалены!')
+                })
+                .catch(error => {
+                    alert("Ошибка удаления!")
+                    console.error('There was an error!', error);
+                });
             await axios.delete(`http://localhost:8072/store/v1/application/${removedItem.id}`, {headers})
                 .then(response => {
                     setApplications((applications) => applications.filter(item => item.id !== removedItem.id));
@@ -76,9 +98,63 @@ const AllAppTable = () => {
         }
         setRemovedItem(null);
     }
+    const changeInstaller = async (id) => {
+        // const installerFormData = new FormData();
+        // installerFormData.append('file', installer);
+        // installerFormData.append('applicationId', id);
+        // installerFormData.append('systemId', systemId);
+        // installerFormData.append('version', version);
+        //
+        // await axios.put('http://localhost:8072/store/v1/installer/upload', installerFormData, {headers})
+        //     .then(response => {
+        //         alert('Установщики успешно добавлены!');
+        //         console.log(response.data)
+        //     })
+        //     .catch(error => {
+        //         console.error('There was an error!', error);
+        //     });
+    }
+
+    const changeImages = async (id) => {
+        // const appImagesFormData = new FormData();
+        // appImagesFormData.append('file', images);
+        // appImagesFormData.append('applicationId', id);
+        //
+        // await axios.put('http://localhost:8072/store/v1/image/upload', appImagesFormData, {headers})
+        //     .then(response => {
+        //         alert('Изображения успешно добавлены!');
+        //         console.log(response.data)
+        //     })
+        //     .catch(error => {
+        //         console.error('There was an error!', error);
+        //     });
+    }
+
+    const saveApp = async (e) => {
+        // e.preventDefault();
+        // const appFormData = new FormData();
+        // appFormData.append('logo', logo);
+        // appFormData.append('name', name);
+        // appFormData.append('shortDescription', shortDescription);
+        // appFormData.append('longDescription', longDescription);
+        // appFormData.append('licenseCode', currentLicense);
+        // appFormData.append('categoryId', currentCategory);
+        //
+        //
+        // await axios.put('http://localhost:8072/store/v1/application', appFormData, {headers})
+        //     .then(response => {
+        //         changeInstaller(response.data['id']);
+        //         changeImages(response.data['id']);
+        //         console.log(response.data)
+        //     })
+        //     .catch(error => {
+        //         console.error('There was an error!', error);
+        //     });
+    }
 
     const closeModal = () => {
         setRemovedItem(null);
+        setEditedItem(null);
     }
 
     useEffect(() => {
@@ -95,6 +171,7 @@ const AllAppTable = () => {
                 :
                 <div>
                     <Modal active={!!removedItem} app={removedItem} onClose={closeModal} onSubmit={deleteApp}/>
+                    <EditAppForm active={!!editedItem}  onClose={closeModal}/>
                     <Table striped className="mb-4" responsive>
                         <thead>
                         <tr>
@@ -120,7 +197,9 @@ const AllAppTable = () => {
                                     borderWidth: 1,
                                     borderColor: "#262626",
                                     borderStyle: "solid"
-                                }}>Редактировать</Button></td>
+                                }}
+                                onClick={() => setEditedItem(app)}
+                                >Редактировать</Button></td>
                                 <td><Button className="rounded-0 ps-4 pe-4" variant="outline-danger" onClick={() => setRemovedItem(app)}>Удалить</Button></td>
                             </tr>
                         )}

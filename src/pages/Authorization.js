@@ -23,7 +23,7 @@ const Authorization = observer(() => {
             let data;
             if(isLogin){
                 data = await authorization(username,password);
-                navigate(CATALOG_ROUTE);
+                navigate(DEVELOPER_ROUTE);
             } else {
                 data = await registration(username, fullName, password);
                 navigate(LOGIN_ROUTE)
