@@ -10,7 +10,6 @@ import axios from "axios";
 const Catalog = () => {
 
     const [categories,setCategory] = useState([]);
-    const [applications,setApplications] = useState([]);
     const [isAppLoading,setIsAppLoading] = useState(false);
     const [searchData,setSearchData] = useState('');
     let items = [];
@@ -28,20 +27,21 @@ const Catalog = () => {
     }
 
     const fetchAppByCategory = async () => {
-        try{
-            setIsAppLoading(true);
-            for(let i = 1; i < categories.length + 1; i++){
-                const response = await axios.get(`http://localhost:8072/store/v1/application/category?page=0&size=6&sort=id,asc&categoryId=${i}`);
-                localStorage.setItem(`${i}`, JSON.stringify(response.data))
+        for(let i = 1; i < categories.length + 1; i++){
+            try{
+                setIsAppLoading(true);
+                if (localStorage.getItem(`${i}`) === null){
+                    const response = await axios.get(`http://localhost:8072/store/v1/application/category?page=0&size=6&sort=id,asc&categoryId=${i}`);
+                    localStorage.setItem(`${i}`, JSON.stringify(response.data))
+                }
+                setIsAppLoading(false);
+            } catch (e) {
+                console.log(e.toString())
             }
-            setIsAppLoading(false);
-        } catch (e) {
-            console.log(e.toString())
         }
     }
-
     const getApp = (category) => {
-        items = JSON.parse(localStorage.getItem(`${category.id}`));
+        items = JSON.parse(localStorage.getItem(`${category}`));
     }
 
     useEffect(() => {
@@ -70,7 +70,9 @@ const Catalog = () => {
                             <div key={category.id}>
                                 <CategoryBar category={category} key={category.id}/>
                                 <Row className="mt-4 mb-3 ms-2 me-2">
-                                    {getApp(category)}
+                                    {
+                                        getApp(category.id)
+                                    }
                                     {
                                         items.map((app) =>
                                             <ProgramCard app={app} key={app.id}/>

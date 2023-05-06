@@ -1,18 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import './FrontPage.style.css'
 import Search from "../../components/Search";
-import {CATALOG_ROUTE, CATEGORY_ROUTE} from "../../routes/consts";
+import {CATALOG_ROUTE, CATEGORY_ROUTE, SEARCH_PAGE_ROUTE} from "../../routes/consts";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {$host} from "../../http";
 import ProgramCardMainPage from "../../components/ProgramCardMainPage";
-import {Button} from "react-bootstrap";
+import {Button, Carousel} from "react-bootstrap";
 import Loader from "../../components/Loader/Loader";
-import search from "../../components/Search";
+import ProgramCard from "../../components/ProgramCard";
+import usePagination from "../../hooks/usePagination";
 
 const FrontPage = () => {
     const [applications,setApplications] = useState([]);
     const [selected,setSelected] = useState(1);
     const [isAppLoading,setIsAppLoading] = useState(false);
+    const [topAppByViews,setTopAppByViews] = useState([]);
+    const [topAppByDownloads,setTopAppByDownloads] = useState([]);
+    const [inputValue,setInputValue] = useState('');
     const navigate = useNavigate();
 
     const selectItem = (position) => {
@@ -49,20 +53,38 @@ const FrontPage = () => {
         }
     }
 
+    const getTopApps = async () => {
+        try{
+            setIsAppLoading(true);
+            const mostViewedApps = await $host.get(`store/v1/application?page=0&size=20&sort=views,desc`);
+            setTopAppByViews(mostViewedApps.data);
+            const mostDownloadedApps = await $host.get(`store/v1/application?page=0&size=20&sort=downloads,desc`);
+            setTopAppByDownloads(mostDownloadedApps.data);
+            setIsAppLoading(false);
+        }
+        catch (e){
+            console.log(e);
+        }
+    }
+
+    const handleClickSearch = (e) => {
+        e.preventDefault();
+        localStorage.setItem('search', inputValue);
+        navigate(SEARCH_PAGE_ROUTE);
+    }
+
     useEffect(() => {
         fetchAppByCategory(selected);
+        getTopApps();
     }, [])
 
     return (
-        isAppLoading
-            ? <Loader/>
-            :
             <div className="w-100">
                 <div className="w-100 d-flex main-container h-auto">
                     <div className="d-flex justify-content-between w-75 m-auto flex-column m-5 p-5">
                         <h2 className="text-color" style={{fontWeight:200}}>Мультиплатформенный магазин приложений</h2>
                         <div className="search-box mb-4">
-                            <Search/>
+                            <Search value={inputValue} placeholder={"Поиск по наименованию приложения"} onChange={(e) => setInputValue(e.target.value)} onSubmit={(e) => handleClickSearch(e)}/>
                         </div>
                         <div className="d-flex justify-content-between flex-wrap">
                             <div className="col-12 col-md-6">
@@ -100,8 +122,25 @@ const FrontPage = () => {
                         </div>
                     </div>
                 </div>
+                <div className="w-75 m-auto m-5 ps-5 pe-5">
+                    <h3 style={{fontWeight: 200}}>Рекомендации</h3>
+                    <div className="d-flex align-items-center justify-content-between">
+                        <div className="d-flex flex-row styled-scrollbars" style={{overflowY:'scroll'}}>
+                            {topAppByViews?.map((app) =>
+                                <ProgramCard app={app} key={app.id}/>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                <div className="w-75 m-auto m-5 p-5">
+                    <h3 style={{fontWeight: 200}}>Чаще всего скачивали</h3>
+                    <div className="d-flex flex-row styled-scrollbars pb-2" style={{overflowY:'scroll'}}>
+                        {topAppByDownloads?.map((app) =>
+                            <ProgramCard app={app} key={app.id}/>
+                        )}
+                    </div>
+                </div>
             </div>
-    );
-};
+    )};
 
 export default FrontPage;

@@ -82,7 +82,6 @@ const CategoryPage = () => {
                                         <ProgramCard app={el} key={el.id}/>
                                     ))
                                 }
-
                             </Row>
                             <div className="d-flex align-items-center justify-content-between mt-4 mb-4">
                                 {

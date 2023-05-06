@@ -72,6 +72,7 @@ const NavBar = observer(() => {
         user.setIsAuth(false);
         user.setUsername('');
         user.setUserId('');
+        user.setIsAdmin(false);
         localStorage.removeItem('authData');
         localStorage.removeItem('user');
         navigate(CATALOG_ROUTE);

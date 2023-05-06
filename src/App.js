@@ -17,9 +17,14 @@ const App = observer(() => {
 
     useEffect(() => {
         check().then(() => {
-            user.setUser(true)
-            user.setIsAuth(true)
             if(userInfo !== null){
+                user.setUser(true);
+                user.setIsAuth(true);
+                if(userInfo.authority.name === 'USER'){
+                    user.setIsAdmin(false);
+                } else {
+                    user.setIsAdmin(true);
+                }
                 user.setUserId(userInfo['id']);
                 user.setUsername(userInfo['fullName']);
             }

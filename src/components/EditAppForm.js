@@ -1,8 +1,11 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Form, ModalBody, ModalDialog, ModalFooter, ModalHeader, ModalTitle} from "react-bootstrap";
 import Select from "react-select";
+import {$authHost} from "../http";
+import {values} from "mobx";
+import {selectOptions} from "@testing-library/user-event/dist/select-options";
 
-const EditAppForm = ({active, onEdit, onClose}) => {
+const EditAppForm = ({active, editFormData, handleEditFormChange, onEdit, onClose}) => {
     if(!active){
         return null;
     }
@@ -18,21 +21,23 @@ const EditAppForm = ({active, onEdit, onClose}) => {
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="appName">Наименование приложения</Form.Label>
                             <Form.Control
+                                name="name"
                                 className="rounded-0"
                                 id="appName"
                                 autoComplete="off"
                                 placeholder="Введите наименование приложения"
-                                // value={name}
-                                // onChange={e => setName(e.target.value)}
+                                value={editFormData.name}
+                                onChange={handleEditFormChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="appLicense">Лицензия</Form.Label>
                             <Select
-                                // options={optionsForLicense}
-                                // onChange={onChangeLicense}
-                                // value={getLicenseValue()}
-                                // noOptionsMessage={({inputValue}) => !inputValue ? {optionsForLicense} : "Лицензия не найдена"}
+                                name="license"
+                                options={editFormData.optionsForLicense}
+                                noOptionsMessage={({inputValue}) => !inputValue ? editFormData.optionsForLicense : "Лицензия не найдена"}
+                                defaultInputValue={editFormData.license}
+                                onChange={handleEditFormChange}
                                 placeholder="Выберите лицензию"
                                 theme={
                                     theme => ({
@@ -45,43 +50,47 @@ const EditAppForm = ({active, onEdit, onClose}) => {
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="appShortDescription">Краткая информация</Form.Label>
                             <Form.Control
+                                name="shortDescription"
                                 autoComplete="off"
                                 className="rounded-0"
                                 id="appShortDescription"
                                 placeholder="Опишите меня в двух словах"
-                                // value={shortDescription}
-                                // onChange={e => setShortDescription(e.target.value)}
+                                value={editFormData.shortDescription}
+                                onChange={handleEditFormChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="appVersion">Укажите версию приложения</Form.Label>
                             <Form.Control
+                                name="version"
                                 autoComplete="off"
                                 className="rounded-0"
                                 id="appVersion"
                                 placeholder="Тут должна быть версия"
-                                // value={version}
-                                // onChange={e => setVersion(e.target.value)}
+                                value={editFormData.version}
+                                onChange={handleEditFormChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="appLongDescription">Полное описание</Form.Label>
                             <Form.Control
+                                name="longDescription"
                                 as="textarea"
                                 className="rounded-0"
                                 id="appLongDescription"
                                 placeholder="Расскажите обо мне ;)"
-                                // value={longDescription}
-                                // onChange={e => setLongDescription(e.target.value)}
+                                value={editFormData.longDescription}
+                                onChange={handleEditFormChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="appCategory">Категория приложения</Form.Label>
                             <Select
-                                // options={optionsForCategory}
-                                // onChange={onChangeCategory}
-                                // value={getCategoryValue()}
-                                // noOptionsMessage={({inputValue}) => !inputValue ? {optionsForCategory} : "Категория не найдена"}
+                                name="category"
+                                options={editFormData.optionsForCategory}
+                                noOptionsMessage={({inputValue}) => !inputValue ? editFormData.optionsForCategory : "Категория не найдена"}
+                                defaultInputValue={editFormData.category}
+                                onChange={handleEditFormChange}
                                 placeholder="Выберите категорию"
                                 theme={
                                     theme => ({
@@ -94,8 +103,11 @@ const EditAppForm = ({active, onEdit, onClose}) => {
                         <Form.Group controlId="appImage" className="mb-3">
                             <Form.Label>Иконка для приложения</Form.Label>
                             <Form.Control
+                                name="logo"
                                 type="file"
                                 className="rounded-0"
+                                value={editFormData.logo}
+                                onChange={handleEditFormChange}
                                 // onChange={e => setLogo(e.target.files[0])}
                                 accept="image/*,.png,.jpg,.gif,.web,.svg"
                             />
@@ -103,19 +115,25 @@ const EditAppForm = ({active, onEdit, onClose}) => {
                         <Form.Group controlId="appImages" className="mb-3">
                             <Form.Label>Изображения приложения</Form.Label>
                             <Form.Control
+                                name="images"
                                 type="file"
                                 className="rounded-0"
                                 multiple
                                 accept="image/*,.png,.jpg,.gif,.web,.svg"
+                                value={editFormData.images}
+                                onChange={handleEditFormChange}
                                 // onChange={e => setImages(e.target.files)}
                             />
                         </Form.Group>
                         <Form.Group controlId="appInstaller" className="mb-3">
                             <Form.Label>Добавьте свое приложение</Form.Label>
                             <Form.Control
+                                name="installer"
                                 type="file"
                                 className="rounded-0"
                                 accept=".exe,.deb,.tar.gz,.apk,.ipa"
+                                value={editFormData.installer}
+                                onChange={handleEditFormChange}
                                 // onChange={e => setInstaller(e.target.files[0])}
                             />
                         </Form.Group>

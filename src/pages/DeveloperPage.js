@@ -17,16 +17,18 @@ const DeveloperPage = () => {
         check().then(() => {
             user.setUser(true)
             user.setIsAuth(true)
-            if(userInfo !== null){
+            if(userInfo.authority.name === 'USER'){
+                user.setIsAdmin(false);
+            } else {
+                user.setIsAdmin(true);
+            }
+            if(userInfo !== []){
                 user.setUserId(userInfo['id']);
                 user.setUsername(userInfo['fullName']);
             }
         }).finally(() => setLoading(false))
     }, []);
 
-    if(loading){
-        return <Loader/>
-    }
     const renderSwitch = (param) => {
         switch(param) {
             case 1:
@@ -36,6 +38,10 @@ const DeveloperPage = () => {
             case 3:
                 return <CreateAppForm/>;
         }
+    }
+
+    if(loading){
+        return <Loader/>
     }
     return (
         <div className="m-4 d-flex flex-row">

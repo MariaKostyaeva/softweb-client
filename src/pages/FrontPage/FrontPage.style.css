@@ -109,6 +109,23 @@ linear-gradient(10deg, #00302f,#006361);
 .search-box{
     width: 100%;
 }
+
+.styled-scrollbars {
+    scrollbar-color: #f1f1f1 #464646;
+}
+.styled-scrollbars::-webkit-scrollbar {
+    width: 0;
+    height: 2px;
+}
+.styled-scrollbars::-webkit-scrollbar-thumb {
+    background: #464646;
+    border-radius: 5px;
+}
+.styled-scrollbars::-webkit-scrollbar-track {
+    background: #d9d9d9;
+    border-radius: 5px;
+}
+
 @media (min-width: 769px) {
     .box{
         display: flex;
