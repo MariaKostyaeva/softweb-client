@@ -15,11 +15,11 @@
     margin-top: 60px;
     min-width: 100vh;
 }
-/* Reset */
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Tahoma";
 }
 body{
     background-color: var(--white);}
@@ -29,25 +29,20 @@ ul{
     list-style: none;
     margin: 0;
 }
-
-/*button style*/
 .btn-primary{
     background-color: var(--green);
     outline: none;
     border: none;}
-
 .btn-primary:hover,
 .btn-primary:active,
 .btn-primary:focus {
     outline: none;
     border: none;}
-
 .btn-secondary{
     background-color: white;
     border-color: rgba(0,0,0,.56);
     color: #111;
     }
-
 .btn-secondary:hover,
 .btn-secondary:focus {
     outline: none;
@@ -56,7 +51,6 @@ ul{
     color: #111;
     background-color: rgba(0,0,0,.05);
 }
-
 .btn-secondary:active {
     outline: none;
     transition: 0.3s;
@@ -64,12 +58,10 @@ ul{
     color: #111;
     background-color: rgba(0,0,0,.10);
 }
-
 .btn-tertiary{
     background-color: #262626;
     color: #fff;
 }
-
 .btn-tertiary:hover,
 .btn-tertiary:focus {
     outline: none;
@@ -77,14 +69,12 @@ ul{
     color: #fff;
     background-color: rgba(0,0,0,.05);
 }
-
 .btn-tertiary:active {
     outline: none;
     transition: 0.3s;
     color: #fff;
     background-color: rgba(0,0,0,.10);
 }
-
 .link-hover:hover{
     text-underline-offset: 2px;
     text-decoration: 1px underline;

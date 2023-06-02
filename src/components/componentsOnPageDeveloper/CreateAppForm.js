@@ -50,6 +50,8 @@ const CreateAppForm = () => {
         'Authorization': `Basic ${encodedCred}`
     };
 
+
+
     const fetchData = async () => {
         try{
             const license = await $authHost.get(`store/v1/license`);
@@ -92,29 +94,6 @@ const CreateAppForm = () => {
        setCurrentCategory(newValue.value)
     }
 
-    const blurHandler = (e) => {
-        switch (e.target.name) {
-            case 'logo': setLogoDirty(true);
-                break;
-            case 'name': setNameDirty(true);
-                break;
-            case 'shortDescription': setShortDescriptionDirty(true);
-                break;
-            case 'longDescription': setLongDescriptionDirty(true);
-                break;
-            case 'license': setCurrentLicenseDirty(true);
-                break;
-            case 'category': setCurrentCategoryDirty(true);
-                break;
-            case 'version': setVersionDirty(true);
-                break;
-            case 'images': setImagesDirty(true);
-                break;
-            case 'installer': setInstallerDirty(true);
-                break;
-        }
-    }
-
     const addInstaller = async (id) => {
         const installerFormData = new FormData();
         installerFormData.append('file', installer);
@@ -143,7 +122,6 @@ const CreateAppForm = () => {
             .catch(error => {
                 console.error('There was an error!', error);
             });
-
     }
 
     const addImages = async (id) => {
@@ -172,22 +150,48 @@ const CreateAppForm = () => {
         appFormData.append('licenseCode', currentLicense);
         appFormData.append('categoryId', currentCategory);
 
-
-        await axios.post('http://localhost:8072/store/v1/application', appFormData, {headers})
-            .then(response => {
-                addInstaller(response.data['id']);
-                addImages(response.data['id']);
-                console.log(response.data)
-                alert('Приложение успешно добавлено!');
-            })
-            .catch(error => {
-                console.error('There was an error!', error);
-            });
+        if(isOnline) {
+            await axios.post('http://localhost:8072/store/v1/application', appFormData, {headers})
+                .then(response => {
+                    addInstaller(response.data['id']);
+                    addImages(response.data['id']);
+                    console.log(response.data)
+                    alert('Приложение успешно добавлено!');
+                })
+                .catch(error => {
+                    console.error('There was an error!', error);
+                });
+        } else {
+            alert('Ошибка соединения с сервером! Проверьте подключение к интернету и повторите попытку позже.')
+        }
     }
 
     const handleClick = async (e) => {
         await addApp(e);
-        window.location.reload();
+        // window.location.reload();
+    }
+
+    const blurHandler = (e) => {
+        switch (e.target.name) {
+            case 'logo': setLogoDirty(true);
+                break;
+            case 'name': setNameDirty(true);
+                break;
+            case 'shortDescription': setShortDescriptionDirty(true);
+                break;
+            case 'longDescription': setLongDescriptionDirty(true);
+                break;
+            case 'license': setCurrentLicenseDirty(true);
+                break;
+            case 'category': setCurrentCategoryDirty(true);
+                break;
+            case 'version': setVersionDirty(true);
+                break;
+            case 'images': setImagesDirty(true);
+                break;
+            case 'installer': setInstallerDirty(true);
+                break;
+        }
     }
 
     const nameHandler = (e) => {
@@ -269,9 +273,21 @@ const CreateAppForm = () => {
         }
     }
 
+   const [isOnline, setIsOnline] = useState(navigator.onLine);
    useEffect(() => {
        fetchData();
-   },[])
+       const handleStatusChange = () => {
+           setIsOnline(navigator.onLine);
+       };
+
+       window.addEventListener('online', handleStatusChange);
+       window.addEventListener('offline', handleStatusChange);
+
+       return () => {
+           window.removeEventListener('online', handleStatusChange);
+           window.removeEventListener('offline', handleStatusChange);
+       };
+   },[isOnline])
 
    return (
         <Form className="w-100 mb-4">
@@ -288,8 +304,7 @@ const CreateAppForm = () => {
                     placeholder="Введите наименование приложения"
                     value={name}
                     onChange={e => nameHandler(e)}
-                    onBlur={e => blurHandler(e)}
-                />
+                    onBlur={e => blurHandler(e)} />
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appLicense">Лицензия</Form.Label>
@@ -301,13 +316,7 @@ const CreateAppForm = () => {
                     value={getLicenseValue()}
                     noOptionsMessage={({inputValue}) => !inputValue ? {optionsForLicense} : "Лицензия не найдена"}
                     placeholder="Выберите лицензию"
-                    theme={
-                        theme => ({
-                            ...theme,
-                            borderRadius:0
-                        })
-                    }
-                />
+                    theme={ theme => ({...theme, borderRadius:0})}/>
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appShortDescription">Краткая информация</Form.Label>
@@ -320,8 +329,7 @@ const CreateAppForm = () => {
                     placeholder="Опишите меня в двух словах"
                     value={shortDescription}
                     onChange={e => shortDescriptionHandler(e)}
-                    onBlur={e => blurHandler(e)}
-                />
+                    onBlur={e => blurHandler(e)}/>
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appVersion">Укажите версию приложения</Form.Label>
@@ -334,8 +342,7 @@ const CreateAppForm = () => {
                     placeholder="Тут должна быть версия"
                     value={version}
                     onChange={e => versionHandler(e)}
-                    onBlur={e => blurHandler(e)}
-                />
+                    onBlur={e => blurHandler(e)}/>
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appLongDescription">Полное описание</Form.Label>
@@ -348,8 +355,7 @@ const CreateAppForm = () => {
                     placeholder="Расскажите обо мне ;)"
                     value={longDescription}
                     onChange={e => longDescriptionHandler(e)}
-                    onBlur={e => blurHandler(e)}
-                />
+                    onBlur={e => blurHandler(e)}/>
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label htmlFor="appCategory">Категория приложения</Form.Label>
@@ -362,13 +368,7 @@ const CreateAppForm = () => {
                     noOptionsMessage={({inputValue}) => !inputValue ? {optionsForCategory} : "Категория не найдена"}
                     onBlur={e => blurHandler(e)}
                     placeholder="Выберите категорию"
-                    theme={
-                        theme => ({
-                            ...theme,
-                            borderRadius:0
-                        })
-                    }
-                />
+                    theme={ theme => ({...theme, borderRadius:0})}/>
             </Form.Group>
             <Form.Group controlId="appImage" className="mb-3">
                 <Form.Label>Иконка для приложения</Form.Label>
@@ -379,8 +379,7 @@ const CreateAppForm = () => {
                     className="rounded-0"
                     onChange={e => logoHandler(e)}
                     accept="image/*,.png,.jpg,.gif,.web,.svg"
-                    onBlur={e => blurHandler(e)}
-                />
+                    onBlur={e => blurHandler(e)}/>
             </Form.Group>
             <Form.Group controlId="appImages" className="mb-3">
                 <Form.Label>Изображения приложения</Form.Label>
@@ -392,8 +391,7 @@ const CreateAppForm = () => {
                     multiple
                     accept="image/*,.png,.jpg,.gif,.web,.svg"
                     onChange={e => imagesHandler(e)}
-                    onBlur={e => blurHandler(e)}
-                />
+                    onBlur={e => blurHandler(e)}/>
             </Form.Group>
             <Form.Group controlId="appInstaller" className="mb-3">
                 <Form.Label>Добавьте свое приложение</Form.Label>
@@ -404,15 +402,10 @@ const CreateAppForm = () => {
                     className="rounded-0"
                     accept=".exe,.deb,.tar.gz,.apk,.ipa"
                     onChange={e => installerHandler(e)}
-                    onBlur={e => blurHandler(e)}
-                />
+                    onBlur={e => blurHandler(e)}/>
             </Form.Group>
             <div className="d-flex justify-content-end w-100">
-                <Button
-                    className="btn-primary rounded-0 ps-4 pe-4"
-                    variant="success"
-                    onClick={handleClick}
-                >Добавить</Button>
+                <Button className="btn-primary rounded-0 ps-4 pe-4" variant="success" onClick={handleClick}>Добавить</Button>
             </div>
         </Form>
     );

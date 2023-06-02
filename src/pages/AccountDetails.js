@@ -2,14 +2,11 @@ import React, {useContext, useEffect, useState} from 'react';
 import {NavLink, useNavigate} from "react-router-dom";
 import {$authHost} from "../http";
 import {Context} from "../index";
-import EditAppForm from "../components/EditAppForm";
 import EditUserData from "../components/EditUserData";
 import axios from "axios";
 import {Buffer} from "buffer";
-import {check} from "../http/userAPI";
-import Loader from "../components/Loader/Loader";
-import {Button} from "react-bootstrap";
 import {LOGIN_ROUTE} from "../routes/consts";
+import EditUserPassword from "../components/EditUserPassword";
 
 const AccountDetails = () => {
     const {user} = useContext(Context);
@@ -17,6 +14,7 @@ const AccountDetails = () => {
     const [totalAppInfo, setTotalAppInfo] = useState([]);
     const security = JSON.parse(localStorage.getItem('authData'));
     const [isActive,setIsActive] = useState(false);
+    const [passwordFormActive,setPasswordFormActive] = useState(false);
     const navigate = useNavigate();
 
     const encodedCred = Buffer.from(security['username'] + ':' + security['password']).toString('base64');
@@ -25,13 +23,6 @@ const AccountDetails = () => {
         'Content-Type':'application/json',
         'Authorization': `Basic ${encodedCred}`
     };
-    const [editFormData, setEditFormData] = useState({
-        fullName: '',
-        username: '',
-        password: '',
-        newPassword: '',
-        confirmPassword: ''
-    });
 
     const fetchAppInfoByUserId = async () => {
         try{
@@ -55,6 +46,16 @@ const AccountDetails = () => {
         return longRuRUFormatter.format(date);
     }
 
+    const closeModal = () => {
+        setIsActive(false);
+        setPasswordFormActive(false);
+    }
+
+    const [editFormData, setEditFormData] = useState({
+        fullName: '',
+        username: ''
+    });
+
     const handleEditFormChange = (e) => {
         e.preventDefault();
 
@@ -67,18 +68,11 @@ const AccountDetails = () => {
         setEditFormData(newFormData);
     }
 
-    const closeModal = () => {
-        setIsActive(false);
-    }
-
     const handleEditClick = (e) => {
         e.preventDefault();
         const formValues = {
             fullName: userInfo.fullName,
             username: userInfo.username,
-            password: '',
-            newPassword: '',
-            confirmPassword: ''
         }
         setEditFormData(formValues);
 
@@ -91,27 +85,71 @@ const AccountDetails = () => {
         userFormData.append('id', user._userId);
         userFormData.append('username', editFormData.username);
         userFormData.append('fullName', editFormData.fullName);
-        if(editFormData.newPassword === editFormData.confirmPassword) {
-            userFormData.append('password', editFormData.newPassword);
-        } else {
-            alert('Пароли различны. Проверьте введенные данные');
-        }
         userFormData.append('isAdmin', `${user._isAdmin}`);
+        userFormData.append('password', security.password);
+        await axios.put('http://localhost:8072/store/v1/user', userFormData, {headers})
+            .then(response => {
+                console.log(response)
+                if(response.status === 200){
+                    localStorage.setItem('user', JSON.stringify(response.data));
+                    localStorage.setItem('authData', JSON.stringify({username:editFormData.username, password:security.password}));
+                    alert('Данные успешно изменены!');
+                    setIsActive(false);
+                }
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
+    }
 
-        if(editFormData.password === ''){
-            alert('Укажите текущий пароль')
+    const [editFormPassword,setEditFormPassword] = useState({
+        password: '',
+        newPassword: '',
+        confirmPassword: ''
+    })
+
+    const handleEditPasswordClick = (e) => {
+        e.preventDefault();
+        const formValues = {
+            password: '',
+            newPassword: '',
+            confirmPassword: ''
+        }
+        setEditFormPassword(formValues);
+        setPasswordFormActive(true);
+    }
+
+    const handleEditFormPasswordChange = (e) => {
+        e.preventDefault();
+
+        const fieldName = e.currentTarget.name;
+        const fieldValue = e.currentTarget.value;
+
+        const newFormData = { ...editFormPassword };
+        newFormData[fieldName] = fieldValue;
+
+        setEditFormPassword(newFormData);
+    }
+
+    const savePasswordChanges = async (e) => {
+        e.preventDefault();
+        const userFormData = new FormData();
+
+        if(editFormPassword.password === '' || editFormPassword.confirmPassword === '' || editFormPassword.newPassword === ''){
+            alert('Поля не могут быть пустыми!');
+        } else if(editFormPassword.confirmPassword !== editFormPassword.newPassword){
+            alert('Пароли не совпадают!');
         } else {
+            userFormData.append('id', user._userId);
+            userFormData.append('username', userInfo.username);
+            userFormData.append('fullName', userInfo.fullName);
+            userFormData.append('isAdmin', `${user._isAdmin}`);
+            userFormData.append('password', editFormPassword.newPassword);
             await axios.put('http://localhost:8072/store/v1/user', userFormData, {headers})
                 .then(response => {
                     console.log(response)
                     if(response.status === 200){
-                        localStorage.setItem('user', JSON.stringify(response.data));
-                        if(editFormData.newPassword === ''){
-                            localStorage.setItem('authData', JSON.stringify({username:editFormData.username, password:editFormData.password}));
-                        }
-                        else {
-                            localStorage.setItem('authData', JSON.stringify({username:editFormData.username, password:editFormData.newPassword}));
-                        }
+                        localStorage.setItem('authData', JSON.stringify({username:userInfo.username, password:editFormPassword.newPassword}));
                         alert('Данные успешно изменены!');
                         setIsActive(false);
                     }
@@ -119,6 +157,7 @@ const AccountDetails = () => {
                 .catch(error => {
                     console.error('There was an error!', error);
                 });
+            alert('Пароль успешно изменен!');
         }
     }
 
@@ -156,6 +195,12 @@ const AccountDetails = () => {
                 onEdit={e => saveUserData(e)}
                 onDelete={e => deleteUserData(e)}
                 onClose={closeModal}/>
+            <EditUserPassword
+                active={!!passwordFormActive}
+                editFormData={editFormPassword}
+                handleEditFormChange={handleEditFormPasswordChange}
+                onEdit={e => savePasswordChanges(e)}
+                onClose={closeModal}/>
             <div className="d-flex justify-content-between align-items-stretch w-100 h-100">
                 <h3 style={{fontWeight:200}} className="w-auto">Данные учетной записи</h3>
                 <div className="m-auto ms-0 me-0"><NavLink className="link-hover" onClick={(e) => handleEditClick(e)}>Редактировать сведения</NavLink></div>
@@ -163,14 +208,13 @@ const AccountDetails = () => {
             <hr/>
             <div>
                 <div className="d-flex flex-row align-items-stretch mb-4">
-                    <p style={{width:100}}>Имя пользователя:</p>
+                    <p style={{width:100}}>Пользователь:</p>
                     <div className="d-flex flex-column ms-5 m-auto">
                         <h5 className="mb-3">{userInfo.fullName}</h5>
-                        <div>Кого ваши пользователи будут видеть в качестве издателя ваших приложений.</div>
                     </div>
                 </div>
                 <div className="d-flex flex-row align-items-stretch mb-4">
-                    <p style={{width:100}}>Ваш логин:</p>
+                    <p style={{width:100}}>Логин:</p>
                     <div className="d-flex flex-column ms-5 m-auto">
                         <h5 className="mb-3">{userInfo.username}</h5>
                     </div>
@@ -178,7 +222,7 @@ const AccountDetails = () => {
                 <div className="d-flex flex-row align-items-stretch mb-4">
                     <p style={{width:100}}>Пароль:</p>
                     <div className="d-flex flex-column ms-5 m-auto">
-                        <h5 className="mb-3" style={{WebkitTextSecurity: 'disc'}}>{security['password']}</h5>
+                        <NavLink className="link-hover mb-3" onClick={(e) => handleEditPasswordClick(e)}>Изменить пароль</NavLink>
                     </div>
                 </div>
             </div>
@@ -188,7 +232,7 @@ const AccountDetails = () => {
             <hr/>
             <div>
                 <div className="d-flex flex-row align-items-stretch mb-4">
-                    <p style={{width:300}}>Дата и время последнего посещения:</p>
+                    <p style={{width:300}}>Последнее посещение:</p>
                     <div className="d-flex flex-column ms-5 m-auto">
                         <h5 className="mb-4">{formatDate(userInfo.lastEntered)}</h5>
                     </div>

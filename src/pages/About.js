@@ -1,5 +1,5 @@
+import {Container} from "react-bootstrap";
 import React from 'react';
-import {Col, Container} from "react-bootstrap";
 import Logo from '../assets/logo.svg';
 import aboutForUsers from '../assets/about_for_users.svg';
 import aboutForDevelopers from '../assets/about_for_developers.svg';

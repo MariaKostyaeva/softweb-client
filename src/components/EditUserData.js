@@ -12,7 +12,7 @@ const EditUserData = ({active, editFormData, handleEditFormChange, onEdit, onDel
                     <ModalTitle>Внесение изменений в учетную запись</ModalTitle>
                 </ModalHeader>
 
-                <ModalBody style={{height: 470, overflowY: "auto"}}>
+                <ModalBody style={{height: 230, overflowY: "auto"}}>
                     <Form className="w-100 mb-4">
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="fullName">Имя пользователя</Form.Label>
@@ -35,44 +35,6 @@ const EditUserData = ({active, editFormData, handleEditFormChange, onEdit, onDel
                                 id="username"
                                 placeholder="Введите логин"
                                 value={editFormData.username}
-                                onChange={handleEditFormChange}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label htmlFor="password">Текущий пароль</Form.Label>
-                            <Form.Control
-                                name="password"
-                                autoComplete="off"
-                                className="rounded-0"
-                                id="password"
-                                type="password"
-                                placeholder="Пароль"
-                                value={editFormData.password}
-                                onChange={handleEditFormChange}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label htmlFor="newPassword">Выберите пароль</Form.Label>
-                            <Form.Control
-                                name="newPassword"
-                                autoComplete="off"
-                                className="rounded-0"
-                                id="newPassword"
-                                type="password"
-                                placeholder="Пароль должен содержать от 3 до 16 символов"
-                                value={editFormData.newPassword}
-                                onChange={handleEditFormChange}
-                            />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label htmlFor="confirmPassword">Повторно введите пароль</Form.Label>
-                            <Form.Control
-                                name="confirmPassword"
-                                type="password"
-                                className="rounded-0"
-                                id="confirmPassword"
-                                placeholder="Введите пароль еще раз"
-                                value={editFormData.confirmPassword}
                                 onChange={handleEditFormChange}
                             />
                         </Form.Group>

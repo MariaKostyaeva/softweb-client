@@ -12,7 +12,7 @@ const Modal = ({active, app, onClose, onSubmit}: PropsWithChildren<IModalProps>)
         return null;
     }
     return (
-        <div className="modal" style={{ display: 'block', position: 'absolute' }}>
+        <div className="modal" style={{ display: 'block', position: 'absolute', backgroundColor: 'rgba(0,0,0,0.7)' }}>
             <ModalDialog onClick={(e) => e.stopPropagation()}>
                 <ModalHeader closeButton onClick={onClose}>
                     <ModalTitle>Удаление приложения</ModalTitle>

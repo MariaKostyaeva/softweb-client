@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import '../pages/ProgramPage/ProgramPage.style.css';
-import {$host} from "../http";
 import {Row} from "react-bootstrap";
 import Loader from "../components/Loader/Loader";
 import Search from "../components/Search";

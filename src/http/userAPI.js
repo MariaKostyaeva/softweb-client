@@ -38,7 +38,6 @@ export const registration = async (username, fullName, password) => {
 
 }
 
-
 export const authorization = async (username, password) => {
     localStorage.setItem('authData', JSON.stringify({username: username, password: password}))
     try {
@@ -56,7 +55,7 @@ export const authorization = async (username, password) => {
             .then((response) => {
                 window.localStorage.setItem("user", JSON.stringify(response))
                 if(response.status === 401){
-                    let error = new Error('Учетная запись отсутствует. Зарегистрируйтесь');
+                    let error = new Error('Неверный логин или пароль');
                     error.response = response;
                     throw error;
                 }
@@ -75,6 +74,3 @@ export const authorization = async (username, password) => {
 export const check = async () => {
     return localStorage.getItem('user');
 }
-
-
-

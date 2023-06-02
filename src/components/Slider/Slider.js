@@ -2,7 +2,7 @@ import React from 'react';
 import {Carousel} from "react-bootstrap";
 const Slider = (props) => {
     return (
-            <Carousel variant="dark" className="w-75 m-auto" indicators={false} interval={null}>
+            <Carousel variant="dark" className="w-100 m-auto ms-4 me-4" indicators={false} interval={null}>
                 {props.images?.map((image) =>
                     <Carousel.Item key={image.id} style={{maxHeight:500}}>
                         <img

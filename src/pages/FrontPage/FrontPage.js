@@ -1,14 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import './FrontPage.style.css'
 import Search from "../../components/Search";
-import {CATALOG_ROUTE, CATEGORY_ROUTE, SEARCH_PAGE_ROUTE} from "../../routes/consts";
-import {NavLink, useLocation, useNavigate} from "react-router-dom";
+import {CATALOG_ROUTE, SEARCH_PAGE_ROUTE} from "../../routes/consts";
+import {NavLink, useNavigate} from "react-router-dom";
 import {$host} from "../../http";
 import ProgramCardMainPage from "../../components/ProgramCardMainPage";
-import {Button, Carousel} from "react-bootstrap";
-import Loader from "../../components/Loader/Loader";
+import {Button} from "react-bootstrap";
 import ProgramCard from "../../components/ProgramCard";
-import usePagination from "../../hooks/usePagination";
 
 const FrontPage = () => {
     const [applications,setApplications] = useState([]);
@@ -80,7 +78,7 @@ const FrontPage = () => {
 
     return (
             <div className="w-100">
-                <div className="w-100 d-flex main-container h-auto">
+                <div className="w-100 d-flex main-container h-auto h-75">
                     <div className="d-flex justify-content-between w-75 m-auto flex-column m-5 p-5">
                         <h2 className="text-color" style={{fontWeight:200}}>Мультиплатформенный магазин приложений</h2>
                         <div className="search-box mb-4">

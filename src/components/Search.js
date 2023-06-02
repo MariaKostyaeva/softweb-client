@@ -1,8 +1,5 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Button, Form} from "react-bootstrap";
-import {useNavigate} from "react-router-dom";
-import {SEARCH_PAGE_ROUTE} from "../routes/consts";
-import data from "bootstrap/js/src/dom/data";
 
 const Search = ({value, placeholder, onChange, onSubmit}) => {
     return (

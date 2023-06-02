@@ -37,8 +37,6 @@ const AllAppTable = () => {
         })
     });
 
-
-
     const userAuthData = JSON.parse(localStorage.getItem('authData'));
     const encodedCred = Buffer.from(userAuthData.username + ':' + userAuthData.password).toString('base64');
     const headers = {
@@ -60,7 +58,7 @@ const AllAppTable = () => {
 
     const fetchTotalAppByUserId = async () => {
         try{
-            const response = await $authHost.get(`store/v1/application/user/info?size=5&userId=${user._userId}`);
+            const response = await axios.get(`http://localhost:8072/store/v1/application/user/info?size=5&userId=${user._userId}`);
             setTotal(response.data);
         }
         catch (e){
@@ -76,28 +74,6 @@ const AllAppTable = () => {
         page,
         totalPages,
     } = usePagination({contentPerPage: 5, count: total['total'],});
-
-    const fetchAppByUserId = async () => {
-        try{
-            setIsAppLoading(true);
-            const response = await $authHost.get(`store/v1/application/user?size=${total['total']}&sort=id,asc&userId=${user._userId}`);
-            setApplications(response.data);
-            setIsAppLoading(false);
-        }
-        catch (e){
-            console.log(e);
-        }
-    }
-
-    const formatDate = (newDate) => {
-        const date = new Date(Date.UTC(newDate[0] , newDate[1] , newDate[2]));
-        const longRuRUFormatter = new Intl.DateTimeFormat('ru-RU',{
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        })
-        return longRuRUFormatter.format(date);
-    }
 
     const handleEditFormChange = (e) => {
         e.preventDefault();
@@ -138,7 +114,6 @@ const AllAppTable = () => {
         setRemovedItem(null);
     }
 
-
     const deleteApplicationInfo = async () => {
         await axios.delete(`http://localhost:8072/store/v1/application/${removedItem.id}`, {headers})
             .then(() => {
@@ -177,11 +152,33 @@ const AllAppTable = () => {
         console.log(formValues)
     }
 
+    const fetchAppByUserId = async (id) => {
+        try{
+            setIsAppLoading(true);
+            const response = await axios.get(`http://localhost:8072/store/v1/application/user?size=${total['total']}&sort=id,asc&userId=${id}`);
+            setApplications(response.data);
+            setIsAppLoading(false);
+        }
+        catch (e){
+            console.log(e);
+        }
+    }
+
+    const formatDate = (newDate) => {
+        const date = new Date(Date.UTC(newDate[0] , newDate[1] , newDate[2]));
+        const longRuRUFormatter = new Intl.DateTimeFormat('ru-RU',{
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        })
+        return longRuRUFormatter.format(date);
+    }
+
     const fetchData = async () => {
         try{
-            const license = await $authHost.get(`store/v1/license`);
+            const license = await axios.get(`http://localhost:8072/store/v1/license`);
             setLicenses(license.data);
-            const category = await $authHost.get('store/v1/category');
+            const category = await axios.get('http://localhost:8072/store/v1/category');
             setCategories(category.data);
         }
         catch (e){
@@ -191,7 +188,7 @@ const AllAppTable = () => {
 
     useEffect(() => {
         fetchTotalAppByUserId();
-        fetchAppByUserId();
+        fetchAppByUserId(user._userId);
         fetchData();
     }, [])
 
@@ -224,7 +221,7 @@ const AllAppTable = () => {
                         <th></th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody data-testid="app-list">
                     {applications.slice(firstContentIndex,lastContentIndex).map((app,index) =>
                         <tr key={app.id}>
                         <td>{index + 1}</td>

@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Dropdown} from "react-bootstrap";
 import Slider from "./Slider/Slider";
-import {NavLink, useParams} from "react-router-dom";
-import {$host} from "../http";
+import {NavLink} from "react-router-dom";
 
 
 const AppInfo = (props) => {
@@ -70,23 +69,6 @@ const AppInfo = (props) => {
         return `${date[2]} ${monthName} ${date[0]}`;
     }
 
-    const getSystem = (installer) => {
-        switch (installer.operatingSystemDto.id){
-            case 1: return <span><i className="fa-brands fa-windows icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.exe)</span></span>;
-                break;
-            case 2: return <span><i className="fa-brands fa-linux icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.deb)</span></span>;
-                break;
-            case 3: return <span><i className="fa-brands fa-ubuntu icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.tar.gz)</span></span>;
-                break;
-            case 4: return <span><i className="fa-brands fa-android icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.apk)</span></span>;
-                break;
-            case 5: return <span><i className="fa-brands fa-apple icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.ipa)</span></span>;
-                break;
-            default: return '?';
-                break;
-        }
-    }
-
     const fetchInstaller = async (path) => {
         const response = await fetch(`${path}`);
         if(response.status === 200){
@@ -145,7 +127,7 @@ const AppInfo = (props) => {
                     </div>
                     <div className="d-flex flex-row ms-4">
                         <div className="d-flex flex-row flex-wrap m-auto">
-                            <Dropdown className="dropdown">
+                            <Dropdown className="dropdown" data-testid="dropdown-availableOs">
                                 <Dropdown.Toggle className="rounded-0 ps-4 pe-4" style={{width:350}} variant="secondary">
                                     {selectedInstaller.length === 0 ? 'Доступные операционные системы' : selectedInstaller.operatingSystemDto.name}
                                 </Dropdown.Toggle>
@@ -231,5 +213,22 @@ const AppInfo = (props) => {
         </div>
     );
 };
+
+export const getSystem = (installer) => {
+    switch (installer.operatingSystemDto.id){
+        case 1: return <span><i className="fa-brands fa-windows icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.exe)</span></span>;
+            break;
+        case 2: return <span><i className="fa-brands fa-linux icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.deb)</span></span>;
+            break;
+        case 3: return <span><i className="fa-brands fa-ubuntu icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.tar.gz)</span></span>;
+            break;
+        case 4: return <span><i className="fa-brands fa-android icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.apk)</span></span>;
+            break;
+        case 5: return <span><i className="fa-brands fa-apple icon"></i>{installer.operatingSystemDto.name} <span className="extension">(.ipa)</span></span>;
+            break;
+        default: return '?';
+            break;
+    }
+}
 
 export default AppInfo;

@@ -5,7 +5,6 @@ import Loader from "../components/Loader/Loader";
 import {useParams} from "react-router-dom";
 import ProgramCard from "../components/ProgramCard";
 import {$host} from "../http";
-import data from "bootstrap/js/src/dom/data";
 import usePagination from "../hooks/usePagination";
 import axios from "axios";
 
